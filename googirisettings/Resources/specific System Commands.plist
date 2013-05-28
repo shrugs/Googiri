@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+    <key>items</key>
+    <array>
+        <dict>
+            <key>cell</key>
+            <string>PSGroupCell</string>
+            <key>label</key>
+            <string>Enable these if you'd like these types of queries to be routed to Siri automatically.</string>
+            <key>footerText</key>
+            <string>If the system command you want is not here, feel free to suggest it to me on twitter @MattCMultimedia. Because Googiri's system command-recognizing ability isn't as flexible as Siri's, if the automatic routing doesn't work, your best bet is to turn "Send All to Siri" ON, and then specify "Google" to search with Google. Thanks!</string>
+        </dict>
+
+        <dict>
+            <key>cell</key>
+            <string>PSSwitchCell</string>
+            <key>default</key>
+            <false/>
+            <key>defaults</key>
+            <string>com.mattcmultimedia.googirisettings</string>
+            <key>key</key>
+            <string>systemCommandNavigation</string>
+            <key>label</key>
+            <string>Navigation</string>
+            <key>postNotification</key>
+            <string>com.mattcmultimedia.googirisettings/reload</string>
+        </dict>
+        <dict>
+            <key>cell</key>
+            <string>PSSwitchCell</string>
+            <key>default</key>
+            <false/>
+            <key>defaults</key>
+            <string>com.mattcmultimedia.googirisettings</string>
+            <key>key</key>
+            <string>systemCommandWeather</string>
+            <key>label</key>
+            <string>Weather</string>
+            <key>postNotification</key>
+            <string>com.mattcmultimedia.googirisettings/reload</string>
+        </dict>
+
+        <dict>
+            <key>cell</key>
+            <string>PSGroupCell</string>
+            <key>label</key>
+            <string>Add Additional System Commands</string>
+            <key>footerText</key>
+            <string>Add alternative system command prefixes here. This is for when your prefered method of triggering a system command is not built into Googiri. Separate phrases with commas (NO space after each comma). Capitalization matters.
+
+An example: "phone,holla at,hit up" (sans quotes).
+
+With this configuration, each one of those phrases will cause your query to be automatically routed to Siri. There is no guarantee that Siri will understand what "holla at" means, though ;P .</string>
+        </dict>
+        <dict>
+            <key>cell</key>
+            <string>PSEditTextCell</string>
+            <key>default</key>
+            <string></string>
+            <key>defaults</key>
+            <string>com.mattcmultimedia.googirisettings</string>
+            <key>key</key>
+            <string>alternativeSystemCommands</string>
+            <key>label</key>
+            <string>Commands</string>
+            <key>postNotification</key>
+            <string>com.mattcmultimedia.googirisettings/reload</string>
+        </dict>
+
+
+    </array>
+    <key>title</key>
+    <string>Googiri</string>
+</dict>
+</plist>

@@ -1,0 +1,9 @@
+Package: com.mattcmultimedia.googiri
+Name: Googiri
+Depends: mobilesubstrate, libactivator, preferenceloader
+Version: 1.5.0
+Architecture: iphoneos-arm
+Description: route Google Search queries to Siri
+Maintainer: MattCMultimedia
+Author: MattCMultimedia
+Section: Tweaks

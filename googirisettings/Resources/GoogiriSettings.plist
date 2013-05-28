@@ -1,0 +1,212 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>items</key>
+	<array>
+		<dict>
+			<key>cell</key>
+			<string>PSGroupCell</string>
+			<key>label</key>
+			<string>Googiri!</string>
+			<key>footerText</key>
+			<string>Use Google's speech-to-text, but if you say "Siri" before your query, the query will open in Siri instead of Google.</string>
+		</dict>
+
+		<dict>
+			<key>alternateColors</key>
+			<true/>
+		    <key>cell</key>
+		    <string>PSSwitchCell</string>
+		    <key>default</key>
+		    <true/>
+		    <key>defaults</key>
+		    <string>com.mattcmultimedia.googirisettings</string>
+		    <key>key</key>
+		    <string>globalEnable</string>
+		    <key>label</key>
+		    <string>Enable Googiri</string>
+		    <key>postNotification</key>
+		    <string>com.mattcmultimedia.googirisettings/reload</string>
+		    <key>icon</key>
+		    <string>altGoogiri.png</string>
+		</dict>
+
+
+		<dict>
+			<key>cell</key>
+			<string>PSGroupCell</string>
+			<key>label</key>
+			<string>Send Everything to Siri!</string>
+			<key>footerText</key>
+			<string>Basically, use Siri's results with Google's awesome speech-to-text engine. All queries will be routed to Siri, unless you say "Google" first.</string>
+		</dict>
+		<dict>
+		    <key>cell</key>
+		    <string>PSSwitchCell</string>
+		    <key>default</key>
+		    <false/>
+		    <key>defaults</key>
+		    <string>com.mattcmultimedia.googirisettings</string>
+		    <key>key</key>
+		    <string>sendEverythingToSiri</string>
+		    <key>label</key>
+		    <string>Send All To Siri</string>
+		    <key>postNotification</key>
+		    <string>com.mattcmultimedia.googirisettings/reload</string>
+		    <key>icon</key>
+		    <string>altGoogiri.png</string>
+		</dict>
+
+
+		<dict>
+			<key>cell</key>
+			<string>PSGroupCell</string>
+			<key>label</key>
+			<string>Automatically Send System Commands to Siri</string>
+			<key>footerText</key>
+			<string>When a system command prefixes the query (full list below!), the command will automatically be routed to Siri.</string>
+		</dict>
+		<dict>
+		    <key>cell</key>
+		    <string>PSSwitchCell</string>
+		    <key>default</key>
+		    <true/>
+		    <key>defaults</key>
+		    <string>com.mattcmultimedia.googirisettings</string>
+		    <key>key</key>
+		    <string>useSiriForSystemFunctions</string>
+		    <key>label</key>
+		    <string>Route Sys Cmds</string>
+		    <key>postNotification</key>
+		    <string>com.mattcmultimedia.googirisettings/reload</string>
+		    <key>icon</key>
+		    <string>altGoogiri.png</string>
+		</dict>
+		<dict>
+			<key>cell</key>
+			<string>PSLinkCell</string>
+			<key>label</key>
+			<string>specific System Commands</string>
+			<key>detail</key>
+			<string>GoogiriSpecificSystemCommands</string>
+		</dict>
+
+		<dict>
+			<key>cell</key>
+			<string>PSGroupCell</string>
+			<key>label</key>
+			<string>Other Name for Siri</string>
+			<key>footerText</key>
+			<string>Add alternative names for Siri here, separated by a space. Capitalization matters.</string>
+		</dict>
+		<dict>
+		    <key>cell</key>
+		    <string>PSEditTextCell</string>
+		    <key>default</key>
+		    <string></string>
+		    <key>defaults</key>
+		    <string>com.mattcmultimedia.googirisettings</string>
+		    <key>key</key>
+		    <string>alternativeNamesForSiri</string>
+		    <key>label</key>
+		    <string>Names</string>
+		    <key>postNotification</key>
+		    <string>com.mattcmultimedia.googirisettings/reload</string>
+		</dict>
+
+		<!-- FOOTER -->
+		<dict>
+			<key>cell</key>
+			<string>PSGroupCell</string>
+			<key>label</key>
+			<string>© MattCMultimedia, AKA Shrugs 2013</string>
+			<key>footerText</key>
+			<string>Wonderful icon by Alex Wright. Toggles icon by John from JustAddDesign.net.
+Thanks to the author of Ask Assistant, rjharris, for helping me implement the "start Siri with corrected text" functionality. All credit for the implementation goes to him.</string>
+		</dict>
+		<!-- have links for paypal, twitter, etc here -->
+		<dict>
+			<key>action</key>
+			<string>donationButton:</string>
+			<key>cell</key>
+			<string>PSButtonCell</string>
+			<key>label</key>
+			<string>Donate via PayPal :)</string>
+		</dict>
+		<dict>
+			<key>action</key>
+			<string>openAlexWrightPortfolio:</string>
+			<key>cell</key>
+			<string>PSButtonCell</string>
+			<key>label</key>
+			<string>Alex Wright's Portfolio</string>
+		</dict>
+		<dict>
+			<key>action</key>
+			<string>openDemoVideo:</string>
+			<key>cell</key>
+			<string>PSButtonCell</string>
+			<key>label</key>
+			<string>Theipodrookie's Demo</string>
+		</dict>
+<!-- 		<dict>
+		    <key>cell</key>
+		    <string>PSSwitchCell</string>
+		    <key>default</key>
+		    <false/>
+		    <key>defaults</key>
+		    <string>com.mattcmultimedia.googirisettings</string>
+		    <key>key</key>
+		    <string>alternativeIcon</string>
+		    <key>label</key>
+		    <string>Use Alt Icon</string>
+		    <key>postNotification</key>
+		    <string>com.mattcmultimedia.googirisettings/useAltIcon</string>
+		</dict> -->
+		<dict>
+			<key>action</key>
+			<string>openJustAddDesignPortfolio:</string>
+			<key>cell</key>
+			<string>PSButtonCell</string>
+			<key>label</key>
+			<string>JustAddDesign's Site</string>
+		</dict>
+
+		<dict>
+			<key>cell</key>
+			<string>PSGroupCell</string>
+			<key>label</key>
+			<string>Usage</string>
+			<key>footerText</key>
+			<string>Googiri - Use Google's awesome speech-to-text results with Siri.
+
+Speak your query in the Google Search app, and if you prepend your query with a few keywords, Siri will take over handling the query.
+
+For example, you could ask Google for the weather with "What's the weather", but if you want Siri's results instead, say "hey, Siri, what's the weather".
+
+This works for system functions, of course. Telling Google, "remind me to take out the trash in an hour" will open Siri with your already filled in reminder card.
+
+You can optionally set Siri as the default results engine by toggling "Send All to Siri" in the settings panel. This will send all queries from Google's Search app to Siri, unless you say "Google" (or a similar phrase) before your query.
+
+Finally, if you prepend your query with one of the system commands below, Siri will automatically take over, regardless of the setting above.
+
+______________
+
+List of phrases that route queries to Siri: "Hey, Siri...", "Siri..."
+
+List of phrases that route queries to Google: "Hey, Google...", "Google...", "Google for...","Google search...", "Google search for..." "Search...", "Search for..."
+
+List of System Command Prefixes: "remind me to...", "set a reminder...", "open...", "wake me up...", "set an alarm...", "set a timer...", "email...", "check email...", "check my email...", "text...", "new text...", "send a message...", "send a text...", "read my...", "play...", "note...", "call...", "FaceTime...", "post on Facebook...", "post on Twitter...", "tweet...", "give me directions to...", "get me directons to...", "find directions for...", "directions for...", "directions to...", "drive me to...", "get directions to...".
+
+I hope you enjoy using Googiri!</string>
+		</dict>
+
+
+
+
+	</array>
+	<key>title</key>
+	<string>Googiri</string>
+</dict>
+</plist>

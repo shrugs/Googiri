@@ -1,0 +1,10 @@
+{
+    entry = {
+	bundle = GoogiriSettings;
+	cell = PSLinkCell;
+	detail = GoogiriSettingsListController;
+	icon = googiri.png;
+	isController = 1;
+	label = Googiri;
+    };
+}
