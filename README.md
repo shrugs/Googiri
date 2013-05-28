@@ -1,5 +1,8 @@
 Googiri
 
+[See the cydia listing.](http://apt.thebigboss.org/onepackage.php?bundleid=com.mattcmultimedia.googiri&db=)
+
+
 Googiri - Use Google's awesome speech-to-text results with Siri.
 
 Speak your query in the Google Search app, and if you prepend your query with a few keywords, Siri will take over handling the query.
