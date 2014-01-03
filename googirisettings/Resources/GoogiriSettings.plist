@@ -39,7 +39,7 @@
 			<key>label</key>
 			<string>Send Everything to Siri!</string>
 			<key>footerText</key>
-			<string>Basically, use Siri's results with Google's awesome speech-to-text engine. All queries will be routed to Siri, unless you say "Google" first.</string>
+			<string>Use Siri's results with Google's speech-to-text. All queries will be routed to Siri, unless you say "Google" first.</string>
 		</dict>
 		<dict>
 		    <key>cell</key>
@@ -65,7 +65,7 @@
 			<key>label</key>
 			<string>Automatically Send System Commands to Siri</string>
 			<key>footerText</key>
-			<string>When a system command prefixes the query (full list below!), the command will automatically be routed to Siri.</string>
+			<string>When a system command (reminder, weather, etc) prefixes the query (full list below!), the command will automatically be routed to Siri.</string>
 		</dict>
 		<dict>
 		    <key>cell</key>
@@ -123,7 +123,7 @@
 			<string>© MattCMultimedia, AKA Shrugs 2014</string>
 			<key>footerText</key>
 			<string>Wonderful icon by Alex Wright. Toggles icon by John from JustAddDesign.net.
-Thanks to the author of Ask Assistant, rjharris, for helping me implement the "start Siri with corrected text" functionality. All credit for the implementation goes to him.</string>
+Thanks to the author of Ask Assistant, rjharris, for helping me implement the "start Siri with corrected text" functionality. All credit for the implementation goes to him!</string>
 		</dict>
 		<!-- have links for paypal, twitter, etc here -->
 		<dict>
