@@ -54,12 +54,9 @@ static BOOL systemCommandWeather = NO;
 
 static void googiriOpenQueryInSiri() {
 
-    CPDistributedMessagingCenter *messagingCenter;
-    messagingCenter = [%c(CPDistributedMessagingCenter) centerNamed:@"com.mattcmultimedia.googirisiriactivator"];
+    CPDistributedMessagingCenter *messagingCenter = [%c(CPDistributedMessagingCenter) centerNamed:@"com.mattcmultimedia.googirisiriactivator"];
     rocketbootstrap_distributedmessagingcenter_apply(messagingCenter);
-    // One-way (message only)
     [messagingCenter sendMessageName:@"googiriActivateSiriWithQuery" userInfo:[NSDictionary dictionaryWithObject:latestQuery forKey:@"query"]];
-    NSLog(@"SENT MESSAGE");
 
 }
 
