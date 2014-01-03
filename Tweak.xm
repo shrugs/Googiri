@@ -40,7 +40,7 @@ static NSMutableArray *systemFunctionsCommandPrefixes = [[NSMutableArray alloc] 
 static GMOSearchPaneController *spController;
 static NSString *latestQuery = @"test";
 static BOOL globalEnable = YES;
-static BOOL sendEverythingToSiri = YES;
+static BOOL sendEverythingToSiri = NO;
 static BOOL useSiriForSystemFunctions = YES;
 static NSString *alternativeNamesForSiri = nil;
 static NSMutableArray *alternativeNamesForSiriArray = nil;
@@ -69,7 +69,7 @@ static void googiriUpdatePreferences() {
         //options for settings
         //NSLog(@"PREFS ARE NULL :(");
         globalEnable = YES;
-        sendEverythingToSiri = YES;
+        sendEverythingToSiri = NO;
         useSiriForSystemFunctions = YES;
         alternativeNamesForSiri = nil;
         systemCommandNavigation = NO;
@@ -85,7 +85,7 @@ static void googiriUpdatePreferences() {
         globalEnable = temp ? [temp boolValue] : YES;
 
         temp = [prefs valueForKey:@"sendEverythingToSiri"];
-        sendEverythingToSiri = temp ? [temp boolValue] : YES;
+        sendEverythingToSiri = temp ? [temp boolValue] : NO;
 
         temp = [prefs valueForKey:@"useSiriForSystemFunctions"];
         useSiriForSystemFunctions = temp ? [temp boolValue] : YES;
