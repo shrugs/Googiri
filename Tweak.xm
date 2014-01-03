@@ -1,16 +1,10 @@
 
 
 
-
-
-#import <Google/GMOEcoutezController.h>
-#import <Google/GMOSearchPaneController.h>
-//#import <Google/GMOVoiceSpeakerButtonFlipContainer.h>
-
-#import <AppSupport/CPDistributedMessagingCenter.h>
-
-
-
+#import "GoogleHeaders/GMOEcoutezController.h"
+#import "GoogleHeaders/GMOSearchPaneController.h"
+#import <iOS7/PrivateFrameworks/AppSupport/CPDistributedMessagingCenter.h>
+#import <RocketBootstrap/rocketbootstrap.h>
 
 
 static NSArray *forceToSiriArray = [[NSArray alloc] initWithObjects:@"Siri ", @"hey Siri ", @"is Siri ", @"siri ", @"hey siri ", @"is siri ",@"Siri", @"siri", nil];
@@ -45,10 +39,8 @@ static NSMutableArray *systemFunctionsCommandPrefixes = [[NSMutableArray alloc] 
 //TODO: look at how Google parses the returned data
 static GMOSearchPaneController *spController;
 static NSString *latestQuery = @"test";
-static UIButton *speakerButton = nil;
-static BOOL shouldSilenceNextAudioReading = NO;
 static BOOL globalEnable = YES;
-static BOOL sendEverythingToSiri = NO;
+static BOOL sendEverythingToSiri = YES;
 static BOOL useSiriForSystemFunctions = YES;
 static NSString *alternativeNamesForSiri = nil;
 static NSMutableArray *alternativeNamesForSiriArray = nil;
@@ -61,13 +53,13 @@ static BOOL systemCommandWeather = NO;
 #define PrefPath @"/var/mobile/Library/Preferences/com.mattcmultimedia.googirisettings.plist"
 
 static void googiriOpenQueryInSiri() {
-    //NSLog(@"googiriOpenQueryInSiri: %@", latestQuery);
+
     CPDistributedMessagingCenter *messagingCenter;
     messagingCenter = [%c(CPDistributedMessagingCenter) centerNamed:@"com.mattcmultimedia.googirisiriactivator"];
-
+    rocketbootstrap_distributedmessagingcenter_apply(messagingCenter);
     // One-way (message only)
-    [messagingCenter sendMessageName:@"googiriActivateSiriWithQuery" userInfo:[NSDictionary dictionaryWithObject:latestQuery forKey:@"query"]/* optional dictionary. in this example it will be ignored. */];
-    shouldSilenceNextAudioReading = YES;
+    [messagingCenter sendMessageName:@"googiriActivateSiriWithQuery" userInfo:[NSDictionary dictionaryWithObject:latestQuery forKey:@"query"]];
+    NSLog(@"SENT MESSAGE");
 
 }
 
@@ -80,7 +72,7 @@ static void googiriUpdatePreferences() {
         //options for settings
         //NSLog(@"PREFS ARE NULL :(");
         globalEnable = YES;
-        sendEverythingToSiri = NO;
+        sendEverythingToSiri = YES;
         useSiriForSystemFunctions = YES;
         alternativeNamesForSiri = nil;
         systemCommandNavigation = NO;
@@ -96,7 +88,7 @@ static void googiriUpdatePreferences() {
         globalEnable = temp ? [temp boolValue] : YES;
 
         temp = [prefs valueForKey:@"sendEverythingToSiri"];
-        sendEverythingToSiri = temp ? [temp boolValue] : NO;
+        sendEverythingToSiri = temp ? [temp boolValue] : YES;
 
         temp = [prefs valueForKey:@"useSiriForSystemFunctions"];
         useSiriForSystemFunctions = temp ? [temp boolValue] : YES;
@@ -222,8 +214,8 @@ static void googiriUpdatePreferences() {
 
 -(void)completeRecognitionWithResult:(id)result
 {
-    //%log;
-    //NSLog(@"enable:%i, allToSiri:%i", globalEnable, sendEverythingToSiri);
+    // %log;
+    // NSLog(@"enable:%i, allToSiri:%i", globalEnable, sendEverythingToSiri);
     if (!globalEnable) {
         //NSLog(@"GLOBAL ENABLE OFF. USE NORMAL");
         %orig;
@@ -273,13 +265,14 @@ static void googiriUpdatePreferences() {
             //if we found the prefix, open in siri, else just continue
             latestQuery = result;
             googiriOpenQueryInSiri();
+            [self cancelVoiceSearch];
             return;
         }
 
     }
 
     if (sendEverythingToSiri) {
-        //NSLog(@"SENDING RESULT STRAIGHT TO SIRI");
+        // NSLog(@"SENDING RESULT STRAIGHT TO SIRI");
         BOOL googlePrefixMatchWasFound = NO;
         //GOOGLE
         for (unsigned int i = 0; i < [forceToGoogleArray count]; ++i)
@@ -300,8 +293,8 @@ static void googiriUpdatePreferences() {
         }
         //remove alternative names if any are set
         if (alternativeNamesForSiri != nil || alternativeNamesForSiriArray != NULL) {
-            NSLog(@"looking for alt names");
-            NSLog(@"%@", alternativeNamesForSiriArray);
+            // NSLog(@"looking for alt names");
+            // NSLog(@"%@", alternativeNamesForSiriArray);
             for (unsigned int i = 0; i < [alternativeNamesForSiriArray count]; ++i)
             {
                 NSString *prefixString = [alternativeNamesForSiriArray objectAtIndex:i];
@@ -320,6 +313,7 @@ static void googiriUpdatePreferences() {
         if (!googlePrefixMatchWasFound) {
             latestQuery = result;
             googiriOpenQueryInSiri();
+            [self cancelVoiceSearch];
             return;
         } else {
             //if the match was found, just open it in google
@@ -371,8 +365,8 @@ static void googiriUpdatePreferences() {
             }
             //remove alternative names if any are set
             if (alternativeNamesForSiri != nil || alternativeNamesForSiriArray != NULL) {
-                NSLog(@"looking for alt names");
-                NSLog(@"%@", alternativeNamesForSiriArray);
+                // NSLog(@"looking for alt names");
+                // NSLog(@"%@", alternativeNamesForSiriArray);
                 for (unsigned int i = 0; i < [alternativeNamesForSiriArray count]; ++i)
                 {
                     NSString *prefixString = [alternativeNamesForSiriArray objectAtIndex:i];
@@ -393,24 +387,9 @@ static void googiriUpdatePreferences() {
         }
 
 
-        //kGMOPrefTextToSpeech
-        //the result is a string of the text that is googled
-        //possibly search this for keywords and then pipe to SIRI, but that's sub par
-        //audio only goes off if it's something dynamic, so It'd be better to see if audio is played after this, and if it isn't, pipe through siri
-
-        // GMOVoiceSpeakerButtonFlipContainer *speakerContainer = (GMOVoiceSpeakerButtonFlipContainer *)[spController currentVoiceSpeakerButtonContainer];
-        // UIButton *speakerButton = MSHookIvar<UIButton *>(speakerContainer, "_speakerButton");
-        // UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"test"
-        //     message:[NSString stringWithFormat:@"%@", speakerButton]
-        //     delegate:nil
-        //     cancelButtonTitle:@"K"
-        //     otherButtonTitles:nil];
-        // [alert show];
-        // [alert release];
-
-
         if (siriPrefixMatchWasFound) {
             googiriOpenQueryInSiri();
+            [self cancelVoiceSearch];
             return;
         }
     }
@@ -426,19 +405,19 @@ static void googiriUpdatePreferences() {
 -(id)initWithPaneManager:(id)paneManager headerController:(id)controller instantWebView:(id)view locationManager:(id)manager
 {
     spController = self;
-    %log;
+    // %log;
     return %orig;
 }
 
--(id)initWithFrame:(CGRect)frame voiceButton:(id)button speakerButton:(id)button3
-{
-    if ((self = %orig) != nil) {
-        speakerButton = button3;
-    }
+// -(id)initWithFrame:(CGRect)frame voiceButton:(id)button speakerButton:(id)button3
+// {
+//     if ((self = %orig) != nil) {
+//         speakerButton = button3;
+//     }
 
-    return self;
+//     return self;
 
-}
+// }
 
 %end
 

@@ -1,12 +1,12 @@
-#import <Preferences/PSListController.h>
-#import <Preferences/PSSpecifier.h>
+#import <iOS7/PrivateFrameworks/Preferences/PSListController.h>
+#import <iOS7/PrivateFrameworks/Preferences/PSSpecifier.h>
 
 static CFNotificationCenterRef darwinNotifyCenter = CFNotificationCenterGetDarwinNotifyCenter();
 
 @interface GoogiriSettingsListController: PSListController {
 }
 
-- (void)donationButton:(id)arg;
+- (void)twitter:(id)arg;
 - (void)openAlexWrightPortfolio:(id)arg;
 - (void)setPreferenceValue:(id)value specifier:(id)specifier;
 - (void)openJustAddDesignPortfolio:(id)arg;
@@ -53,8 +53,8 @@ static CFNotificationCenterRef darwinNotifyCenter = CFNotificationCenterGetDarwi
     }
 }
 
-- (void)donationButton:(id)arg {
-    [[UIApplication sharedApplication] openURL:[NSURL URLWithString:@"https://www.paypal.com/cgi-bin/webscr?cmd=_donations&business=mattcmultimedia%40gmail%2ecom&lc=US&item_name=MattCMultimedia%20Development%20%3a%29&currency_code=USD&bn=PP%2dDonationsBF%3abtn_donateCC_LG%2egif%3aNonHosted"]];
+- (void)twitter:(id)arg {
+    [[UIApplication sharedApplication] openURL:[NSURL URLWithString:@"https://twitter.com/MattCMultimedia"]];
 }
 
 - (void)openAlexWrightPortfolio:(id)arg {

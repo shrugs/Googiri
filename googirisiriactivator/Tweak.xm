@@ -1,16 +1,19 @@
 
 
-#import <SpringBoard/SpringBoard.h>
-#import <UIKit/UIKit.h>
-#import <AppSupport/CPDistributedMessagingCenter.h>
-#import <SpringBoard/SBAssistantController.h>
+#import <iOS7/PrivateFrameworks/AppSupport/CPDistributedMessagingCenter.h>
+#import <iOS7/SpringBoard/SBAssistantController.h>
 #import <libactivator/LASimpleListener.h>
-#import <AssistantServices.framework/AFConnection.h>
+#import <iOS7/PrivateFrameworks/AssistantServices/AFConnection.h>
+#import <RocketBootstrap/rocketbootstrap.h>
+
+
 static AFConnection *latestConnection = nil;
 //________________________________________________________________
 //      GoogiriData Stuff
 //________________________________________________________________
 @interface GoogiriData : NSObject
+
+
 - (NSDictionary *)handleMessageNamed:(NSString *)name withUserInfo:(NSDictionary *)userinfo;
 @end
 
@@ -18,19 +21,13 @@ static AFConnection *latestConnection = nil;
 @implementation GoogiriData
 
 - (NSDictionary *)handleMessageNamed:(NSString *)name withUserInfo:(NSDictionary *)userinfo {
-
-    // Process userinfo (simple dictionary) and return a dictionary (or nil)
+    NSLog(@"GOT MESSAGE YAY");
     [[%c(LASimpleListener) sharedInstance] activateVirtualAssistant];
 
     if (![[userinfo objectForKey:@"query"] isEqualToString:@""] )
         [latestConnection startRequestWithCorrectedText:[userinfo objectForKey:@"query"] forSpeechIdentifier:@"00000000-0000-0000-0000-000000000000"];
 
-
-    //performSelector:withObject:afterDelay
-
-
     return nil;
-
 }
 
 - (id)init
@@ -50,13 +47,17 @@ static AFConnection *latestConnection = nil;
 
 - (id)init
 {
-    CPDistributedMessagingCenter *messagingCenter;
-    // Center name must be unique, recommend using application identifier.
-    messagingCenter = [%c(CPDistributedMessagingCenter) centerNamed:@"com.mattcmultimedia.googirisiriactivator"];
-    [messagingCenter runServerOnCurrentThread];
     GoogiriData *googiriData = [[GoogiriData alloc] init];
+
+    CPDistributedMessagingCenter *messagingCenter = [%c(CPDistributedMessagingCenter) centerNamed:@"com.mattcmultimedia.googirisiriactivator"];
+    rocketbootstrap_distributedmessagingcenter_apply(messagingCenter);
+    [messagingCenter runServerOnCurrentThread];
+
+
     // Register Messages
     [messagingCenter registerForMessageName:@"googiriActivateSiriWithQuery" target:googiriData selector:@selector(handleMessageNamed:withUserInfo:)];
+    NSLog(@"CREATED MESSAGEING CENTER AND APPLIED ROCKET BOOTSTRAP");
+
     return %orig;
 }
 

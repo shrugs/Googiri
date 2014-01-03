@@ -120,7 +120,7 @@
 			<key>cell</key>
 			<string>PSGroupCell</string>
 			<key>label</key>
-			<string>© MattCMultimedia, AKA Shrugs 2013</string>
+			<string>© MattCMultimedia, AKA Shrugs 2014</string>
 			<key>footerText</key>
 			<string>Wonderful icon by Alex Wright. Toggles icon by John from JustAddDesign.net.
 Thanks to the author of Ask Assistant, rjharris, for helping me implement the "start Siri with corrected text" functionality. All credit for the implementation goes to him.</string>
@@ -128,11 +128,11 @@ Thanks to the author of Ask Assistant, rjharris, for helping me implement the "s
 		<!-- have links for paypal, twitter, etc here -->
 		<dict>
 			<key>action</key>
-			<string>donationButton:</string>
+			<string>twitter:</string>
 			<key>cell</key>
 			<string>PSButtonCell</string>
 			<key>label</key>
-			<string>Donate via PayPal :)</string>
+			<string>Follow @MattCMultimedia</string>
 		</dict>
 		<dict>
 			<key>action</key>
