@@ -54,7 +54,15 @@ static CFNotificationCenterRef darwinNotifyCenter = CFNotificationCenterGetDarwi
 }
 
 - (void)twitter:(id)arg {
-    [[UIApplication sharedApplication] openURL:[NSURL URLWithString:@"https://twitter.com/MattCMultimedia"]];
+    NSArray *urls = [[NSArray alloc] initWithObjects:@"tweetbot://Matt/follow/MattCMultimedia", @"https://twitter.com/MattCMultimedia", nil];
+    for (int i = 0; i < [urls count]; ++i)
+    {
+        if ([[UIApplication sharedApplication] canOpenURL:[NSURL URLWithString:[urls objectAtIndex:i]]]) {
+            [[UIApplication sharedApplication] openURL:[NSURL URLWithString:[urls objectAtIndex:i]]];
+            break;
+        }
+    }
+
 }
 
 - (void)openAlexWrightPortfolio:(id)arg {
