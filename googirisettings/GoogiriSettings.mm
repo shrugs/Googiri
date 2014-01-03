@@ -54,7 +54,7 @@ static CFNotificationCenterRef darwinNotifyCenter = CFNotificationCenterGetDarwi
 }
 
 - (void)twitter:(id)arg {
-    NSArray *urls = [[NSArray alloc] initWithObjects:@"tweetbot://Matt/follow/MattCMultimedia", @"https://twitter.com/MattCMultimedia", nil];
+    NSArray *urls = [[NSArray alloc] initWithObjects: @"twitter://user?id=606342610", @"tweetbot://Matt/follow/MattCMultimedia", @"https://twitter.com/MattCMultimedia", nil];
     for (int i = 0; i < [urls count]; ++i)
     {
         if ([[UIApplication sharedApplication] canOpenURL:[NSURL URLWithString:[urls objectAtIndex:i]]]) {
