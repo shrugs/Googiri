@@ -21,7 +21,7 @@ static AFConnection *latestConnection = nil;
 @implementation GoogiriData
 
 - (NSDictionary *)handleMessageNamed:(NSString *)name withUserInfo:(NSDictionary *)userinfo {
-    NSLog(@"GOT MESSAGE YAY");
+    // NSLog(@"GOT MESSAGE YAY");
     [[%c(LASimpleListener) sharedInstance] activateVirtualAssistant];
 
     if (![[userinfo objectForKey:@"query"] isEqualToString:@""] )
@@ -56,7 +56,7 @@ static AFConnection *latestConnection = nil;
 
     // Register Messages
     [messagingCenter registerForMessageName:@"googiriActivateSiriWithQuery" target:googiriData selector:@selector(handleMessageNamed:withUserInfo:)];
-    NSLog(@"CREATED MESSAGEING CENTER AND APPLIED ROCKET BOOTSTRAP");
+    // NSLog(@"CREATED MESSAGEING CENTER AND APPLIED ROCKET BOOTSTRAP");
 
     return %orig;
 }
