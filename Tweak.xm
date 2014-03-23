@@ -69,8 +69,7 @@ static BOOL globalEnable = YES;
 static NSUInteger defaultHandler = kSiri;
 // whether or not Googiri should route obvious system commands to Siri sans the 'Siri' keyword
 static BOOL intelligentRouting = YES;
-static NSMutableArray *names = [[NSMutableArray alloc] initWithCapacity:3];
-
+static NSArray *names;
 
 
 
@@ -101,7 +100,7 @@ static void googiriUpdatePreferences() {
     } else {
 
         id temp;
-        NSMutableString *tempStr;
+        NSMutableStrin g *tempStr;
         temp = [prefs valueForKey:@"globalEnable"];
         globalEnable = temp ? [temp boolValue] : YES;
 
@@ -117,22 +116,24 @@ static void googiriUpdatePreferences() {
             temp = [prefs valueForKey:[NSString stringWithFormat:@"%iNames", h]];
             tempStr = temp ? (NSMutableString *)temp : nil;
 
-            if (tempStr != nil || names[h] != NULL) {
+            if (tempStr != nil && names[h] != NULL) {
                 //create the array of names. Separate on the space and then append a space to each and then add to array
                 NSArray *justNamesArray = [tempStr componentsSeparatedByCharactersInSet:[NSCharacterSet whitespaceCharacterSet]];
                 justNamesArray = [justNamesArray filteredArrayUsingPredicate:[NSPredicate predicateWithFormat:@"SELF != ''"]];
-                names[h] = [[NSMutableArray alloc] init];
-                [names[h] addObjectsFromArray:justNamesArray];
                 for (unsigned int i = 0; i < [justNamesArray count]; ++i)
                 {
                     // add a space because string parsing
-                    [names[h] replaceObjectAtIndex:i withObject:[[justNamesArray objectAtIndex:i] stringByAppendingString:@" "]];
+                    [justNamesArray replaceObjectAtIndex:i withObject:[[justNamesArray objectAtIndex:i] stringByAppendingString:@" "]];
                 }
+                [names[h] addObjectsFromArray:justNamesArray];
                 [justNamesArray release];
             }
         }
 
     }
+
+    NSLog(@"PAY ATTENTION TO ME");
+    NSLog(@"%@", names);
 }
 
 
@@ -339,9 +340,37 @@ static void reloadPrefsNotification(CFNotificationCenterRef center,
 %ctor {
     NSAutoreleasePool *pool = [[NSAutoreleasePool alloc] init];
     %init;
-    [names addObject:[[NSMutableArray alloc] initWithObjects:@"Siri ", @"hey Siri ", @"is Siri ", @"siri ", @"hey siri ", @"is siri ",@"Siri", @"siri", nil]];
-    [names addObject:[[NSMutableArray alloc] initWithObjects:@"Google ", @"hey Google ",@"search for ", @"search ", @"Google for ", @"Google search for ", @"Google search ", @"google ", @"hey google ",@"search for ", @"search ", @"google for ", @"google search for ", @"google search ", nil]];
-    [names addObject:[[NSMutableArray alloc] initWithObjects:@"Jarvis", @"Jeeves", nil]];
+
+    names = [[NSMutableArray alloc] initWithObjects:
+           [[NSMutableArray alloc] initWithObjects:@"Siri ",
+                                                   @"hey Siri ",
+                                                   @"is Siri ",
+                                                   @"siri ",
+                                                   @"hey siri ",
+                                                   @"is siri ",
+                                                   @"Siri",
+                                                   @"siri",
+                                                   nil],
+           [[NSMutableArray alloc] initWithObjects:@"Google ",
+                                                   @"hey Google ",
+                                                   @"search for ",
+                                                   @"search ",
+                                                   @"Google for ",
+                                                   @"Google search for ",
+                                                   @"Google search ",
+                                                   @"google ",
+                                                   @"hey google ",
+                                                   @"search for ",
+                                                   @"search ",
+                                                   @"google for ",
+                                                   @"google search for ",
+                                                   @"google search ",
+                                                   nil],
+           [[NSMutableArray alloc] initWithObjects:@"Jarvis ",
+                                                   @"Jeeves ",
+                                                   nil],
+           nil
+       ];
 
 
     CFNotificationCenterRef reload = CFNotificationCenterGetDarwinNotifyCenter();
