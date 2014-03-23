@@ -131,8 +131,6 @@ static void googiriUpdatePreferences() {
 
     }
 
-    NSLog(@"PAY ATTENTION TO ME");
-    NSLog(@"%@", names);
 }
 
 
