@@ -1,6 +1,6 @@
 
 ARCHS = armv7 arm64
-
+TARGET := iphone:7.0:2.0
 include theos/makefiles/common.mk
 
 BUNDLE_NAME = GoogiriSettings
