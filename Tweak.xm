@@ -37,7 +37,6 @@ static NSMutableArray *systemFunctionsCommandPrefixes = [[NSMutableArray alloc] 
                                                                                 @"tweet",
                                                                                 nil];
 //TODO: look at how Google parses the returned data
-static GMOSearchPaneController *spController;
 static NSString *latestQuery = @"test";
 static BOOL globalEnable = YES;
 static BOOL sendEverythingToSiri = NO;
@@ -393,28 +392,6 @@ static void googiriUpdatePreferences() {
     %orig;
     return;
 }
-
-%end
-
-
-%hook GMOSearchPaneController
-
--(id)initWithPaneManager:(id)paneManager headerController:(id)controller instantWebView:(id)view locationManager:(id)manager
-{
-    spController = self;
-    // %log;
-    return %orig;
-}
-
-// -(id)initWithFrame:(CGRect)frame voiceButton:(id)button speakerButton:(id)button3
-// {
-//     if ((self = %orig) != nil) {
-//         speakerButton = button3;
-//     }
-
-//     return self;
-
-// }
 
 %end
 
