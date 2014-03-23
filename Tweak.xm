@@ -163,6 +163,7 @@ static void googiriUpdatePreferences() {
         for (int n = 0; n < [[names objectAtIndex:[[otherHandlers objectAtIndex:i] intValue]] count]; ++n)
         {
             if ([result rangeOfString:[[names objectAtIndex:[[otherHandlers objectAtIndex:i] intValue]] objectAtIndex:n]].location == 0) {
+                result = [result stringByReplacingOccurrencesOfString:[[names objectAtIndex:[[otherHandlers objectAtIndex:i] intValue]] objectAtIndex:n] withString:@""];
                 if ([otherHandlers objectAtIndex:i] == kSiri) {
                     NSLog(@"FOUND SIRI QUERY");
                     latestQuery = result;
@@ -175,6 +176,7 @@ static void googiriUpdatePreferences() {
                     // is webserver
                     // post stuff
                     NSLog(@"WOULD POST %@", result);
+                    [self cancelVoiceSearch];
                 }
                 return;
             }
@@ -182,7 +184,7 @@ static void googiriUpdatePreferences() {
     }
 
     // if handler is google or webserver, check for system commands
-    if (defaultHandler == kGoogle || defaultHandler == kWebserver) {
+    if (intelligentRouting && (defaultHandler == kGoogle || defaultHandler == kWebserver) {
         for (int i = 0; i < [intelligentRoutingCommands count]; ++i)
         {
             if ([result rangeOfString:[intelligentRoutingCommands objectAtIndex:i]].location == 0) {
@@ -208,6 +210,7 @@ static void googiriUpdatePreferences() {
         // is webserver
         // post stuff
         NSLog(@"WOULD POST %@", result);
+        [self cancelVoiceSearch];
     }
     return;
 }
