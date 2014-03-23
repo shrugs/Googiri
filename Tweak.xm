@@ -7,6 +7,13 @@
 #import <RocketBootstrap/rocketbootstrap.h>
 
 
+typedef enum Handler : NSUInteger {
+    kSiri,
+    kGoogle,
+    kWebserver
+} Handler;
+
+
 static NSArray *forceToSiriArray = [[NSArray alloc] initWithObjects:@"Siri ", @"hey Siri ", @"is Siri ", @"siri ", @"hey siri ", @"is siri ",@"Siri", @"siri", nil];
 static NSArray *forceToGoogleArray = [[NSArray alloc] initWithObjects:@"Google ", @"hey Google ",@"search for ", @"search ", @"Google for ", @"Google search for ", @"Google search ", @"google ", @"hey google ",@"search for ", @"search ", @"google for ", @"google search for ", @"google search ", nil];
 static NSMutableArray *systemFunctionsCommandPrefixes = [[NSMutableArray alloc] initWithObjects:@"remind me to ",
@@ -35,18 +42,36 @@ static NSMutableArray *systemFunctionsCommandPrefixes = [[NSMutableArray alloc] 
                                                                                 @"post on Twitter ",
                                                                                 @"post on twitter ",
                                                                                 @"tweet",
+                                                                                @"what's the weather in ",
+                                                                                @"how cold will ",
+                                                                                @"will it rain ",
+                                                                                @"what's the chance of ",
+                                                                                @"how cold is it",
+                                                                                @"is it warm ",
+                                                                                @"is it hot ",
+                                                                                @"is it cold ",
+                                                                                @"weather",
+                                                                                @"what's the weather",
+                                                                                @"give me directions to ",
+                                                                                @"get me directons to ",
+                                                                                @"find directions for ",
+                                                                                @"directions for ",
+                                                                                @"directions to ",
+                                                                                @"drive me ",
+                                                                                @"get directions to ",
+                                                                                @"get directions for ",
+                                                                                @"navigate to ",
+                                                                                @"navigate me to ",
                                                                                 nil];
 //TODO: look at how Google parses the returned data
 static NSString *latestQuery = @"test";
 static BOOL globalEnable = YES;
-static BOOL sendEverythingToSiri = NO;
-static BOOL useSiriForSystemFunctions = YES;
-static NSString *alternativeNamesForSiri = nil;
-static NSMutableArray *alternativeNamesForSiriArray = nil;
-static NSString *alternativeSystemCommands = nil;
-static NSMutableArray *alternativeSystemCommandsArray = nil;
-static BOOL systemCommandNavigation = NO;
-static BOOL systemCommandWeather = NO;
+
+// default handler for queries
+static NSUInteger defaultHandler = kSiri;
+// whether or not Googiri should route obvious system commands to Siri sans the 'Siri' keyword
+static BOOL intelligentRouting = YES;
+static NSMutableArray *names;
 
 
 #define PrefPath @"/var/mobile/Library/Preferences/com.mattcmultimedia.googirisettings.plist"
@@ -68,140 +93,43 @@ static void googiriUpdatePreferences() {
         //options for settings
         //NSLog(@"PREFS ARE NULL :(");
         globalEnable = YES;
-        sendEverythingToSiri = NO;
-        useSiriForSystemFunctions = YES;
-        alternativeNamesForSiri = nil;
-        systemCommandNavigation = NO;
-        systemCommandWeather = NO;
+        defaultHandler = kSiri;
+        intelligentRouting = YES;
 
     } else {
 
-        //NSLog(@"begin loading booleans");
-
-
         id temp;
+        NSMutableString tempStr;
         temp = [prefs valueForKey:@"globalEnable"];
         globalEnable = temp ? [temp boolValue] : YES;
 
-        temp = [prefs valueForKey:@"sendEverythingToSiri"];
-        sendEverythingToSiri = temp ? [temp boolValue] : NO;
+        temp = [prefs valueForKey:@"defaultHandler"];
+        defaultHandler = temp ? [temp intValue] : 0;
 
-        temp = [prefs valueForKey:@"useSiriForSystemFunctions"];
-        useSiriForSystemFunctions = temp ? [temp boolValue] : YES;
+        temp = [prefs valueForKey:@"intelligentRouting"];
+        intelligentRouting = temp ? [temp boolValue] : YES;
 
-        temp = [prefs valueForKey:@"alternativeNamesForSiri"];
-        alternativeNamesForSiri = temp ? (NSMutableString *)temp : nil;
+        for (int h = 0; h < 3; ++h)
+        {
+            // look for key 0Names, 1Names, 2Names
+            temp = [prefs valueForKey:[NSString stringWithFormat:@"%iNames", h]];
+            tempStr = temp ? (NSMutableString *)temp : nil;
 
-        if (alternativeNamesForSiri != nil || alternativeNamesForSiriArray != NULL) {
-            //create the array of names. Separate on the space and then append a space to each and then add to array
-            NSArray *justNamesArray = [alternativeNamesForSiri componentsSeparatedByCharactersInSet:[NSCharacterSet whitespaceCharacterSet]];
-            justNamesArray = [justNamesArray filteredArrayUsingPredicate:[NSPredicate predicateWithFormat:@"SELF != ''"]];
-            alternativeNamesForSiriArray = [[NSMutableArray alloc] init];
-            [alternativeNamesForSiriArray addObjectsFromArray:justNamesArray];
-            for (unsigned int i = 0; i < [justNamesArray count]; ++i)
-            {
-                [alternativeNamesForSiriArray replaceObjectAtIndex:i withObject:[[justNamesArray objectAtIndex:i] stringByAppendingString:@" "]];
+            if (tempStr != nil || names[h] != NULL) {
+                //create the array of names. Separate on the space and then append a space to each and then add to array
+                NSArray *justNamesArray = [tempStr componentsSeparatedByCharactersInSet:[NSCharacterSet whitespaceCharacterSet]];
+                justNamesArray = [justNamesArray filteredArrayUsingPredicate:[NSPredicate predicateWithFormat:@"SELF != ''"]];
+                names[h] = [[NSMutableArray alloc] init];
+                [names[h] addObjectsFromArray:justNamesArray];
+                for (unsigned int i = 0; i < [justNamesArray count]; ++i)
+                {
+                    // add a space because string parsing
+                    [names[h] replaceObjectAtIndex:i withObject:[[justNamesArray objectAtIndex:i] stringByAppendingString:@" "]];
+                }
+                [justNamesArray release];
             }
-
-            //NSLog(@"%@", alternativeNamesForSiriArray);
         }
 
-        temp = [prefs valueForKey:@"alternativeSystemCommands"];
-        alternativeSystemCommands = temp ? (NSMutableString *)temp : nil;
-
-        if (alternativeSystemCommands != nil || alternativeSystemCommandsArray != NULL) {
-            //create the array of names. Separate on the space and then append a space to each and then add to array
-            //NSLog(@"%@", alternativeSystemCommands);
-            // NSMutableCharacterSet *charactersToRemove = [NSMutableCharacterSet alphanumericCharacterSet];
-            // [charactersToRemove addCharactersInString:@","];
-            // NSLog(@"charactersToRemove: %@", charactersToRemove);
-            NSArray *justCommandsArray = [alternativeSystemCommands componentsSeparatedByCharactersInSet:[NSCharacterSet characterSetWithCharactersInString:@","]];
-            //NSLog(@"justCommandsArray: %@", justCommandsArray);
-            justCommandsArray = [justCommandsArray filteredArrayUsingPredicate:[NSPredicate predicateWithFormat:@"SELF != ''"]];
-            //NSLog(@"justCommandsArray: %@", justCommandsArray);
-            alternativeSystemCommandsArray = [[NSMutableArray alloc] init];
-            [alternativeSystemCommandsArray addObjectsFromArray:justCommandsArray];
-            for (unsigned int i = 0; i < [justCommandsArray count]; ++i)
-            {
-                [alternativeSystemCommandsArray replaceObjectAtIndex:i withObject:[[justCommandsArray objectAtIndex:i] stringByAppendingString:@" "]];
-            }
-
-            //NSLog(@"%@", alternativeSystemCommandsArray);
-        }
-
-        //SPECIFIC COMMANDS NAVIGATION
-        temp = [prefs valueForKey:@"systemCommandNavigation"];
-        systemCommandNavigation = temp ? [temp boolValue] : NO;
-
-        NSArray *systemCommandNavigationArray = [[NSArray alloc] initWithObjects:@"give me directions to ",
-                                                                                @"get me directons to ",
-                                                                                @"find directions for ",
-                                                                                @"directions for ",
-                                                                                @"directions to ",
-                                                                                @"drive me ",
-                                                                                @"get directions to ",
-                                                                                @"get directions for ",
-                                                                                @"navigate to ",
-                                                                                @"navigate me to ",
-                                                                                nil];
-        if (systemCommandNavigation) {
-            //add navigation commands to the systemCommands array
-            for (unsigned int i = 0; i < [systemCommandNavigationArray count]; ++i)
-            {
-                //if array doesn't already contain the object, add it
-                if (![systemFunctionsCommandPrefixes containsObject:[systemCommandNavigationArray objectAtIndex:i]]){
-                    [systemFunctionsCommandPrefixes addObject:[systemCommandNavigationArray objectAtIndex:i]];
-                }
-            }
-        } else {
-            //remove them
-            for (unsigned int i = 0; i < [systemCommandNavigationArray count]; ++i)
-            {
-                //if array doesn't already contain the object, add it
-                if ([systemFunctionsCommandPrefixes containsObject:[systemCommandNavigationArray objectAtIndex:i]]){
-                    [systemFunctionsCommandPrefixes removeObject:[systemCommandNavigationArray objectAtIndex:i]];
-                }
-            }
-        }
-        [systemCommandNavigationArray release];
-
-        //SPECIFIC COMMANDS WEATHER
-
-        temp = [prefs valueForKey:@"systemCommandWeather"];
-        systemCommandWeather = temp ? [temp boolValue] : NO;
-
-        NSArray *systemCommandWeatherArray = [[NSArray alloc] initWithObjects:@"what's the weather in ",
-                                                                                @"how cold will ",
-                                                                                @"will it rain ",
-                                                                                @"what's the chance of ",
-                                                                                @"how cold is it",
-                                                                                @"is it warm ",
-                                                                                @"is it hot ",
-                                                                                @"is it cold ",
-                                                                                @"weather",
-                                                                                @"what's the weather",
-                                                                                nil];
-        if (systemCommandWeather) {
-            //add navigation commands to the systemCommands array
-            for (unsigned int i = 0; i < [systemCommandWeatherArray count]; ++i)
-            {
-                //if array doesn't already contain the object, add it
-                if (![systemFunctionsCommandPrefixes containsObject:[systemCommandWeatherArray objectAtIndex:i]]){
-                    [systemFunctionsCommandPrefixes addObject:[systemCommandWeatherArray objectAtIndex:i]];
-                }
-            }
-        } else {
-            //remove them
-            for (unsigned int i = 0; i < [systemCommandWeatherArray count]; ++i)
-            {
-                //if array doesn't already contain the object, add it
-                if ([systemFunctionsCommandPrefixes containsObject:[systemCommandWeatherArray objectAtIndex:i]]){
-                    [systemFunctionsCommandPrefixes removeObject:[systemCommandWeatherArray objectAtIndex:i]];
-                }
-            }
-        }
-        [systemCommandWeatherArray release];
-        //NSLog(@"%@", prefs);
     }
 }
 
