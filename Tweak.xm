@@ -14,9 +14,7 @@ typedef enum Handler : NSUInteger {
 } Handler;
 
 
-static NSArray *forceToSiriArray = [[NSArray alloc] initWithObjects:@"Siri ", @"hey Siri ", @"is Siri ", @"siri ", @"hey siri ", @"is siri ",@"Siri", @"siri", nil];
-static NSArray *forceToGoogleArray = [[NSArray alloc] initWithObjects:@"Google ", @"hey Google ",@"search for ", @"search ", @"Google for ", @"Google search for ", @"Google search ", @"google ", @"hey google ",@"search for ", @"search ", @"google for ", @"google search for ", @"google search ", nil];
-static NSMutableArray *systemFunctionsCommandPrefixes = [[NSMutableArray alloc] initWithObjects:@"remind me to ",
+static NSMutableArray *intelligentRoutingCommands = [[NSMutableArray alloc] initWithObjects:@"remind me to ",
                                                                                 @"set a reminder ",
                                                                                 @"open ",
                                                                                 @"wake me up ",
@@ -71,7 +69,15 @@ static BOOL globalEnable = YES;
 static NSUInteger defaultHandler = kSiri;
 // whether or not Googiri should route obvious system commands to Siri sans the 'Siri' keyword
 static BOOL intelligentRouting = YES;
-static NSMutableArray *names;
+static NSMutableArray *names = [[NSMutableArray alloc] initWithCapacity:3];
+
+[names addObject:[[NSMutableArray alloc] initWithObjects:@"Siri ", @"hey Siri ", @"is Siri ", @"siri ", @"hey siri ", @"is siri ",@"Siri", @"siri", nil]];
+[names addObject:[[NSMutableArray alloc] initWithObjects:@"Google ", @"hey Google ",@"search for ", @"search ", @"Google for ", @"Google search for ", @"Google search ", @"google ", @"hey google ",@"search for ", @"search ", @"google for ", @"google search for ", @"google search ", nil]];
+[names addObject:[[NSMutableArray alloc] initWithObjects:@"Jarvis", @"Jeeves", nil]];
+
+
+
+
 
 
 #define PrefPath @"/var/mobile/Library/Preferences/com.mattcmultimedia.googirisettings.plist"
@@ -148,9 +154,9 @@ static void googiriUpdatePreferences() {
     if (useSiriForSystemFunctions) {
         //find a prefix - if founc, pipe to siri without replacing text
         BOOL siriSystemCommandPrefixFound = NO;
-        for (unsigned int i = 0; i < [systemFunctionsCommandPrefixes count]; ++i)
+        for (unsigned int i = 0; i < [intelligentRoutingCommands count]; ++i)
         {
-            NSString *prefixString = [systemFunctionsCommandPrefixes objectAtIndex:i];
+            NSString *prefixString = [intelligentRoutingCommands objectAtIndex:i];
             NSRange prefix = [result rangeOfString:prefixString];
             if (prefix.location == 0) {
                 //NSLog(@"prefix %@", NSStringFromRange(prefix));
