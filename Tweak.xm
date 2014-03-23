@@ -100,7 +100,7 @@ static void googiriUpdatePreferences() {
     } else {
 
         id temp;
-        NSMutableStrin g *tempStr;
+        NSMutableString *tempStr;
         temp = [prefs valueForKey:@"globalEnable"];
         globalEnable = temp ? [temp boolValue] : YES;
 
@@ -123,9 +123,8 @@ static void googiriUpdatePreferences() {
                 for (unsigned int i = 0; i < [justNamesArray count]; ++i)
                 {
                     // add a space because string parsing
-                    [justNamesArray replaceObjectAtIndex:i withObject:[[justNamesArray objectAtIndex:i] stringByAppendingString:@" "]];
+                    [names[h] addObject:[[justNamesArray objectAtIndex:i] stringByAppendingString:@" "]];
                 }
-                [names[h] addObjectsFromArray:justNamesArray];
                 [justNamesArray release];
             }
         }
