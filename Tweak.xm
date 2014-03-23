@@ -62,7 +62,7 @@ static NSMutableArray *intelligentRoutingCommands = [[NSMutableArray alloc] init
                                                                                 @"navigate me to ",
                                                                                 nil];
 //TODO: look at how Google parses the returned data
-static NSString *latestQuery = @"test";
+// static NSString *latestQuery = @"test";
 static BOOL globalEnable = YES;
 
 // default handler for queries
@@ -71,10 +71,6 @@ static NSUInteger defaultHandler = kSiri;
 static BOOL intelligentRouting = YES;
 static NSMutableArray *names = [[NSMutableArray alloc] initWithCapacity:3];
 
-[names addObject:[[NSMutableArray alloc] initWithObjects:@"Siri ", @"hey Siri ", @"is Siri ", @"siri ", @"hey siri ", @"is siri ",@"Siri", @"siri", nil]];
-[names addObject:[[NSMutableArray alloc] initWithObjects:@"Google ", @"hey Google ",@"search for ", @"search ", @"Google for ", @"Google search for ", @"Google search ", @"google ", @"hey google ",@"search for ", @"search ", @"google for ", @"google search for ", @"google search ", nil]];
-[names addObject:[[NSMutableArray alloc] initWithObjects:@"Jarvis", @"Jeeves", nil]];
-
 
 
 
@@ -82,13 +78,13 @@ static NSMutableArray *names = [[NSMutableArray alloc] initWithCapacity:3];
 
 #define PrefPath @"/var/mobile/Library/Preferences/com.mattcmultimedia.googirisettings.plist"
 
-static void googiriOpenQueryInSiri() {
+// static void googiriOpenQueryInSiri() {
 
-    CPDistributedMessagingCenter *messagingCenter = [%c(CPDistributedMessagingCenter) centerNamed:@"com.mattcmultimedia.googirisiriactivator"];
-    rocketbootstrap_distributedmessagingcenter_apply(messagingCenter);
-    [messagingCenter sendMessageName:@"googiriActivateSiriWithQuery" userInfo:[NSDictionary dictionaryWithObject:latestQuery forKey:@"query"]];
+//     CPDistributedMessagingCenter *messagingCenter = [%c(CPDistributedMessagingCenter) centerNamed:@"com.mattcmultimedia.googirisiriactivator"];
+//     rocketbootstrap_distributedmessagingcenter_apply(messagingCenter);
+//     [messagingCenter sendMessageName:@"googiriActivateSiriWithQuery" userInfo:[NSDictionary dictionaryWithObject:latestQuery forKey:@"query"]];
 
-}
+// }
 
 static void googiriUpdatePreferences() {
     //NSLog(@"GOOGIRI PREFS LOADED");
@@ -105,7 +101,7 @@ static void googiriUpdatePreferences() {
     } else {
 
         id temp;
-        NSMutableString tempStr;
+        NSMutableString *tempStr;
         temp = [prefs valueForKey:@"globalEnable"];
         globalEnable = temp ? [temp boolValue] : YES;
 
@@ -140,194 +136,194 @@ static void googiriUpdatePreferences() {
 }
 
 
-%hook GMOEcoutezController
+// %hook GMOEcoutezController
 
--(void)completeRecognitionWithResult:(id)result
-{
-    // %log;
-    // NSLog(@"enable:%i, allToSiri:%i", globalEnable, sendEverythingToSiri);
-    if (!globalEnable) {
-        //NSLog(@"GLOBAL ENABLE OFF. USE NORMAL");
-        %orig;
-        return;
-    }
-    if (useSiriForSystemFunctions) {
-        //find a prefix - if founc, pipe to siri without replacing text
-        BOOL siriSystemCommandPrefixFound = NO;
-        for (unsigned int i = 0; i < [intelligentRoutingCommands count]; ++i)
-        {
-            NSString *prefixString = [intelligentRoutingCommands objectAtIndex:i];
-            NSRange prefix = [result rangeOfString:prefixString];
-            if (prefix.location == 0) {
-                //NSLog(@"prefix %@", NSStringFromRange(prefix));
-                //NSLog(@"^^^ %@", prefixString);
+// -(void)completeRecognitionWithResult:(id)result
+// {
+//     // %log;
+//     // NSLog(@"enable:%i, allToSiri:%i", globalEnable, sendEverythingToSiri);
+//     if (!globalEnable) {
+//         //NSLog(@"GLOBAL ENABLE OFF. USE NORMAL");
+//         %orig;
+//         return;
+//     }
+//     if (useSiriForSystemFunctions) {
+//         //find a prefix - if founc, pipe to siri without replacing text
+//         BOOL siriSystemCommandPrefixFound = NO;
+//         for (unsigned int i = 0; i < [intelligentRoutingCommands count]; ++i)
+//         {
+//             NSString *prefixString = [intelligentRoutingCommands objectAtIndex:i];
+//             NSRange prefix = [result rangeOfString:prefixString];
+//             if (prefix.location == 0) {
+//                 //NSLog(@"prefix %@", NSStringFromRange(prefix));
+//                 //NSLog(@"^^^ %@", prefixString);
 
-                //NSString *normalResult = [[result stringByReplacingOccurrencesOfString:prefixString withString:@""] mutableCopy];
-                //result = normalResult;
+//                 //NSString *normalResult = [[result stringByReplacingOccurrencesOfString:prefixString withString:@""] mutableCopy];
+//                 //result = normalResult;
 
-                siriSystemCommandPrefixFound = YES;
-                break;
+//                 siriSystemCommandPrefixFound = YES;
+//                 break;
 
-            }
-        }
-        //if we didn't find one yet, try looking though the customsystemCommands array
-        if (!siriSystemCommandPrefixFound) {
+//             }
+//         }
+//         //if we didn't find one yet, try looking though the customsystemCommands array
+//         if (!siriSystemCommandPrefixFound) {
 
-            for (unsigned int i = 0; i < [alternativeSystemCommandsArray count]; ++i)
-            {
-                NSString *prefixString = [alternativeSystemCommandsArray objectAtIndex:i];
-                NSRange prefix = [result rangeOfString:prefixString];
-                if (prefix.location == 0) {
-                    //NSLog(@"prefix %@", NSStringFromRange(prefix));
-                    //NSLog(@"^^^ %@", prefixString);
+//             for (unsigned int i = 0; i < [alternativeSystemCommandsArray count]; ++i)
+//             {
+//                 NSString *prefixString = [alternativeSystemCommandsArray objectAtIndex:i];
+//                 NSRange prefix = [result rangeOfString:prefixString];
+//                 if (prefix.location == 0) {
+//                     //NSLog(@"prefix %@", NSStringFromRange(prefix));
+//                     //NSLog(@"^^^ %@", prefixString);
 
-                    //NSString *normalResult = [[result stringByReplacingOccurrencesOfString:prefixString withString:@""] mutableCopy];
-                    //result = normalResult;
+//                     //NSString *normalResult = [[result stringByReplacingOccurrencesOfString:prefixString withString:@""] mutableCopy];
+//                     //result = normalResult;
 
-                    siriSystemCommandPrefixFound = YES;
-                    break;
+//                     siriSystemCommandPrefixFound = YES;
+//                     break;
 
-                }
-            }
-        }
+//                 }
+//             }
+//         }
 
-        if (siriSystemCommandPrefixFound) {
-            //if we found the prefix, open in siri, else just continue
-            latestQuery = result;
-            googiriOpenQueryInSiri();
-            [self cancelVoiceSearch];
-            return;
-        }
+//         if (siriSystemCommandPrefixFound) {
+//             //if we found the prefix, open in siri, else just continue
+//             latestQuery = result;
+//             googiriOpenQueryInSiri();
+//             [self cancelVoiceSearch];
+//             return;
+//         }
 
-    }
+//     }
 
-    if (sendEverythingToSiri) {
-        // NSLog(@"SENDING RESULT STRAIGHT TO SIRI");
-        BOOL googlePrefixMatchWasFound = NO;
-        //GOOGLE
-        for (unsigned int i = 0; i < [forceToGoogleArray count]; ++i)
-        {
-            NSString *prefixString = [forceToGoogleArray objectAtIndex:i];
-            NSRange prefix = [result rangeOfString:prefixString];
-            if (prefix.location == 0) {
-                //NSLog(@"prefix %@", NSStringFromRange(prefix));
-                //NSLog(@"^^^ %@", prefixString);
+//     if (sendEverythingToSiri) {
+//         // NSLog(@"SENDING RESULT STRAIGHT TO SIRI");
+//         BOOL googlePrefixMatchWasFound = NO;
+//         //GOOGLE
+//         for (unsigned int i = 0; i < [forceToGoogleArray count]; ++i)
+//         {
+//             NSString *prefixString = [forceToGoogleArray objectAtIndex:i];
+//             NSRange prefix = [result rangeOfString:prefixString];
+//             if (prefix.location == 0) {
+//                 //NSLog(@"prefix %@", NSStringFromRange(prefix));
+//                 //NSLog(@"^^^ %@", prefixString);
 
-                NSString *normalResult = [[result stringByReplacingOccurrencesOfString:prefixString withString:@""] mutableCopy];
-                result = normalResult;
-                //latestQuery = result;
-                googlePrefixMatchWasFound = YES;
-                break;
+//                 NSString *normalResult = [[result stringByReplacingOccurrencesOfString:prefixString withString:@""] mutableCopy];
+//                 result = normalResult;
+//                 //latestQuery = result;
+//                 googlePrefixMatchWasFound = YES;
+//                 break;
 
-            }
-        }
-        //remove alternative names if any are set
-        if (alternativeNamesForSiri != nil || alternativeNamesForSiriArray != NULL) {
-            // NSLog(@"looking for alt names");
-            // NSLog(@"%@", alternativeNamesForSiriArray);
-            for (unsigned int i = 0; i < [alternativeNamesForSiriArray count]; ++i)
-            {
-                NSString *prefixString = [alternativeNamesForSiriArray objectAtIndex:i];
-                NSRange prefix = [result rangeOfString:prefixString];
-                if (prefix.location == 0) {
-                    //NSLog(@"prefix %@", NSStringFromRange(prefix));
-                    //NSLog(@"^^^ %@", prefixString);
+//             }
+//         }
+//         //remove alternative names if any are set
+//         if (alternativeNamesForSiri != nil || alternativeNamesForSiriArray != NULL) {
+//             // NSLog(@"looking for alt names");
+//             // NSLog(@"%@", alternativeNamesForSiriArray);
+//             for (unsigned int i = 0; i < [alternativeNamesForSiriArray count]; ++i)
+//             {
+//                 NSString *prefixString = [alternativeNamesForSiriArray objectAtIndex:i];
+//                 NSRange prefix = [result rangeOfString:prefixString];
+//                 if (prefix.location == 0) {
+//                     //NSLog(@"prefix %@", NSStringFromRange(prefix));
+//                     //NSLog(@"^^^ %@", prefixString);
 
-                    NSString *normalResult = [[result stringByReplacingOccurrencesOfString:prefixString withString:@""] mutableCopy];
-                    result = normalResult;
-                    break;
+//                     NSString *normalResult = [[result stringByReplacingOccurrencesOfString:prefixString withString:@""] mutableCopy];
+//                     result = normalResult;
+//                     break;
 
-                }
-            }
-        }
-        if (!googlePrefixMatchWasFound) {
-            latestQuery = result;
-            googiriOpenQueryInSiri();
-            [self cancelVoiceSearch];
-            return;
-        } else {
-            //if the match was found, just open it in google
-            %orig;
-            return;
-        }
+//                 }
+//             }
+//         }
+//         if (!googlePrefixMatchWasFound) {
+//             latestQuery = result;
+//             googiriOpenQueryInSiri();
+//             [self cancelVoiceSearch];
+//             return;
+//         } else {
+//             //if the match was found, just open it in google
+//             %orig;
+//             return;
+//         }
 
-    } else {
-        //else if we should only send to siri if explicitly
+//     } else {
+//         //else if we should only send to siri if explicitly
 
-        BOOL googlePrefixMatchWasFound = NO;
-        //GOOGLE
-        for (unsigned int i = 0; i < [forceToGoogleArray count]; ++i)
-        {
-            NSString *prefixString = [forceToGoogleArray objectAtIndex:i];
-            NSRange prefix = [result rangeOfString:prefixString];
-            if (prefix.location == 0) {
-                //NSLog(@"prefix %@", NSStringFromRange(prefix));
-                //NSLog(@"^^^ %@", prefixString);
+//         BOOL googlePrefixMatchWasFound = NO;
+//         //GOOGLE
+//         for (unsigned int i = 0; i < [forceToGoogleArray count]; ++i)
+//         {
+//             NSString *prefixString = [forceToGoogleArray objectAtIndex:i];
+//             NSRange prefix = [result rangeOfString:prefixString];
+//             if (prefix.location == 0) {
+//                 //NSLog(@"prefix %@", NSStringFromRange(prefix));
+//                 //NSLog(@"^^^ %@", prefixString);
 
-                NSString *normalResult = [[result stringByReplacingOccurrencesOfString:prefixString withString:@""] mutableCopy];
-                result = normalResult;
-                latestQuery = result;
-                googlePrefixMatchWasFound = YES;
-                break;
+//                 NSString *normalResult = [[result stringByReplacingOccurrencesOfString:prefixString withString:@""] mutableCopy];
+//                 result = normalResult;
+//                 latestQuery = result;
+//                 googlePrefixMatchWasFound = YES;
+//                 break;
 
-            }
-        }
+//             }
+//         }
 
-        //SIRI
-        BOOL siriPrefixMatchWasFound = NO;
+//         //SIRI
+//         BOOL siriPrefixMatchWasFound = NO;
 
-        if (!googlePrefixMatchWasFound) {
-            for (unsigned int i = 0; i < [forceToSiriArray count]; ++i)
-            {
-                NSString *prefixString = [forceToSiriArray objectAtIndex:i];
-                NSRange prefix = [result rangeOfString:prefixString];
-                if (prefix.location == 0) {
-                    //NSLog(@"prefix %@", NSStringFromRange(prefix));
-                    //NSLog(@"^^^ %@", prefixString);
+//         if (!googlePrefixMatchWasFound) {
+//             for (unsigned int i = 0; i < [forceToSiriArray count]; ++i)
+//             {
+//                 NSString *prefixString = [forceToSiriArray objectAtIndex:i];
+//                 NSRange prefix = [result rangeOfString:prefixString];
+//                 if (prefix.location == 0) {
+//                     //NSLog(@"prefix %@", NSStringFromRange(prefix));
+//                     //NSLog(@"^^^ %@", prefixString);
 
-                    NSString *normalResult = [[result stringByReplacingOccurrencesOfString:prefixString withString:@""] mutableCopy];
-                    result = normalResult;
-                    latestQuery = result;
-                    siriPrefixMatchWasFound = YES;
-                    break;
+//                     NSString *normalResult = [[result stringByReplacingOccurrencesOfString:prefixString withString:@""] mutableCopy];
+//                     result = normalResult;
+//                     latestQuery = result;
+//                     siriPrefixMatchWasFound = YES;
+//                     break;
 
-                }
-            }
-            //remove alternative names if any are set
-            if (alternativeNamesForSiri != nil || alternativeNamesForSiriArray != NULL) {
-                // NSLog(@"looking for alt names");
-                // NSLog(@"%@", alternativeNamesForSiriArray);
-                for (unsigned int i = 0; i < [alternativeNamesForSiriArray count]; ++i)
-                {
-                    NSString *prefixString = [alternativeNamesForSiriArray objectAtIndex:i];
-                    NSRange prefix = [result rangeOfString:prefixString];
-                    if (prefix.location == 0) {
-                        //NSLog(@"prefix %@", NSStringFromRange(prefix));
-                        //NSLog(@"^^^ %@", prefixString);
+//                 }
+//             }
+//             //remove alternative names if any are set
+//             if (alternativeNamesForSiri != nil || alternativeNamesForSiriArray != NULL) {
+//                 // NSLog(@"looking for alt names");
+//                 // NSLog(@"%@", alternativeNamesForSiriArray);
+//                 for (unsigned int i = 0; i < [alternativeNamesForSiriArray count]; ++i)
+//                 {
+//                     NSString *prefixString = [alternativeNamesForSiriArray objectAtIndex:i];
+//                     NSRange prefix = [result rangeOfString:prefixString];
+//                     if (prefix.location == 0) {
+//                         //NSLog(@"prefix %@", NSStringFromRange(prefix));
+//                         //NSLog(@"^^^ %@", prefixString);
 
-                        NSString *normalResult = [[result stringByReplacingOccurrencesOfString:prefixString withString:@""] mutableCopy];
-                        result = normalResult;
-                        latestQuery = result;
-                        siriPrefixMatchWasFound = YES;
-                        break;
+//                         NSString *normalResult = [[result stringByReplacingOccurrencesOfString:prefixString withString:@""] mutableCopy];
+//                         result = normalResult;
+//                         latestQuery = result;
+//                         siriPrefixMatchWasFound = YES;
+//                         break;
 
-                    }
-                }
-            }
-        }
+//                     }
+//                 }
+//             }
+//         }
 
 
-        if (siriPrefixMatchWasFound) {
-            googiriOpenQueryInSiri();
-            [self cancelVoiceSearch];
-            return;
-        }
-    }
-    %orig;
-    return;
-}
+//         if (siriPrefixMatchWasFound) {
+//             googiriOpenQueryInSiri();
+//             [self cancelVoiceSearch];
+//             return;
+//         }
+//     }
+//     %orig;
+//     return;
+// }
 
-%end
+// %end
 
 
 static void reloadPrefsNotification(CFNotificationCenterRef center,
@@ -343,6 +339,9 @@ static void reloadPrefsNotification(CFNotificationCenterRef center,
 %ctor {
     NSAutoreleasePool *pool = [[NSAutoreleasePool alloc] init];
     %init;
+    [names addObject:[[NSMutableArray alloc] initWithObjects:@"Siri ", @"hey Siri ", @"is Siri ", @"siri ", @"hey siri ", @"is siri ",@"Siri", @"siri", nil]];
+    [names addObject:[[NSMutableArray alloc] initWithObjects:@"Google ", @"hey Google ",@"search for ", @"search ", @"Google for ", @"Google search for ", @"Google search ", @"google ", @"hey google ",@"search for ", @"search ", @"google for ", @"google search for ", @"google search ", nil]];
+    [names addObject:[[NSMutableArray alloc] initWithObjects:@"Jarvis", @"Jeeves", nil]];
 
 
     CFNotificationCenterRef reload = CFNotificationCenterGetDarwinNotifyCenter();
