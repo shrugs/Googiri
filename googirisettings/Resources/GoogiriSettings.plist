@@ -107,7 +107,7 @@
             <key>cell</key>
             <string>PSLinkCell</string>
             <key>label</key>
-            <string>Extra</string>
+            <string>Extra Names</string>
             <key>detail</key>
             <string>GoogiriExtraNames</string>
         </dict>
