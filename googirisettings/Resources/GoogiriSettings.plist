@@ -69,6 +69,31 @@
             <string>com.mattcmultimedia.messageswiper7/reload</string>
         </dict>
 
+        <!-- webserverAddress -->
+
+        <dict>
+            <key>cell</key>
+            <string>PSGroupCell</string>
+            <key>label</key>
+            <string>Webserver Address</string>
+            <key>footerText</key>
+            <string>Add a webserver address for handling the query with your own logic.
+'http://example.com/endpoint?q='</string>
+        </dict>
+        <dict>
+            <key>cell</key>
+            <string>PSEditTextCell</string>
+            <key>default</key>
+            <string></string>
+            <key>defaults</key>
+            <string>com.mattcmultimedia.googirisettings</string>
+            <key>key</key>
+            <string>webserverAddress</string>
+            <key>label</key>
+            <string>Addr</string>
+            <key>postNotification</key>
+            <string>com.mattcmultimedia.googirisettings/reload</string>
+        </dict>
 
         <!-- Intelligent Routing -->
 		<dict>
@@ -112,32 +137,6 @@
             <string>GoogiriExtraNames</string>
         </dict>
 
-
-        <!-- webserverAddress -->
-
-		<dict>
-			<key>cell</key>
-			<string>PSGroupCell</string>
-			<key>label</key>
-			<string>Webserver Address</string>
-			<key>footerText</key>
-			<string>Add a webserver address for handling the query with your own logic.
-'http://example.com/endpoint?q='</string>
-		</dict>
-		<dict>
-		    <key>cell</key>
-		    <string>PSEditTextCell</string>
-		    <key>default</key>
-		    <string></string>
-		    <key>defaults</key>
-		    <string>com.mattcmultimedia.googirisettings</string>
-		    <key>key</key>
-		    <string>webserverAddress</string>
-		    <key>label</key>
-		    <string>Addr</string>
-		    <key>postNotification</key>
-		    <string>com.mattcmultimedia.googirisettings/reload</string>
-		</dict>
 
 		<!-- FOOTER -->
 		<dict>
