@@ -184,7 +184,7 @@ static void googiriUpdatePreferences() {
     }
 
     // if handler is google or webserver, check for system commands
-    if (intelligentRouting && (defaultHandler == kGoogle || defaultHandler == kWebserver) {
+    if (intelligentRouting && (defaultHandler == kGoogle || defaultHandler == kWebserver)) {
         for (int i = 0; i < [intelligentRoutingCommands count]; ++i)
         {
             if ([result rangeOfString:[intelligentRoutingCommands objectAtIndex:i]].location == 0) {
