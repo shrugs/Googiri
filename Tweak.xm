@@ -61,7 +61,8 @@ static NSMutableArray *intelligentRoutingCommands = [[NSMutableArray alloc] init
 //TODO: look at how Google parses the returned data
 static NSString *latestQuery = @"test";
 static BOOL globalEnable = YES;
-
+// addr
+static NSString *webserverAddress;
 // default handler for queries
 static NSNumber *defaultHandler = kSiri;
 // whether or not Googiri should route obvious system commands to Siri sans the 'Siri' keyword
@@ -105,6 +106,9 @@ static void googiriUpdatePreferences() {
 
         temp = [prefs valueForKey:@"intelligentRouting"];
         intelligentRouting = temp ? [temp boolValue] : YES;
+
+        temp = [prefs valueForKey:@"webserverAddress"];
+        webserverAddress = temp ? temp : nil;
 
         NSMutableString *tempStr;
         for (int h = 0; h < 3; ++h)
@@ -176,6 +180,12 @@ static void googiriUpdatePreferences() {
                     // is webserver
                     // post stuff
                     NSLog(@"WOULD POST %@", result);
+                    if (webserverAddress != nil) {
+                        NSMutableURLRequest *request = [[NSMutableURLRequest alloc] init];
+                        [request setHTTPMethod:@"GET"];
+                        [request setURL:[NSURL URLWithString:[webserverAddress stringByAddingPercentEscapesUsingEncoding: NSASCIIStringEncoding]]];
+                        [NSURLConnection sendAsynchronousRequest:request queue:nil completionHandler:nil];
+                    }
                     [self cancelVoiceSearch];
                 }
                 return;
@@ -210,6 +220,13 @@ static void googiriUpdatePreferences() {
         // is webserver
         // post stuff
         NSLog(@"WOULD POST %@", result);
+        if (webserverAddress != nil) {
+            NSMutableURLRequest *request = [[NSMutableURLRequest alloc] init];
+            [request setHTTPMethod:@"GET"];
+            [request setURL:[NSURL URLWithString:[webserverAddress stringByAddingPercentEscapesUsingEncoding: NSASCIIStringEncoding]]];
+            [NSURLConnection sendAsynchronousRequest:request queue:nil completionHandler:nil];
+
+        }
         [self cancelVoiceSearch];
     }
     return;
