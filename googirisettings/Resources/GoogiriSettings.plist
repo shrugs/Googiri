@@ -46,11 +46,11 @@
             <key>default</key>
             <integer>0</integer>
             <key>defaults</key>
-            <string>com.mattcmultimedia.messageswiper7</string>
+            <string>com.mattcmultimedia.googirisettings</string>
             <key>detail</key>
             <string>PSListItemsController</string>
             <key>key</key>
-            <string>defaultHander</string>
+            <string>defaultHandler</string>
             <key>label</key>
             <string>Default Handler</string>
             <key>validTitles</key>
@@ -66,7 +66,7 @@
                 <integer>2</integer>
             </array>
             <key>postNotification</key>
-            <string>com.mattcmultimedia.messageswiper7/reload</string>
+            <string>com.mattcmultimedia.googirisettings/reload</string>
         </dict>
 
         <!-- webserverAddress -->

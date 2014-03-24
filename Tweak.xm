@@ -11,7 +11,7 @@ static NSNumber *kGoogle = [NSNumber numberWithInteger: 1];
 static NSNumber *kWebserver = [NSNumber numberWithInteger: 2];
 
 
-static NSMutableArray *intelligentRoutingCommands = [[NSMutableArray alloc] initWithObjects:@"remind me to ",
+static NSMutableArray *intelligentRoutingCommands = [[NSMutableArray alloc] initWithObjects:@"remind me ",
                                                                                 @"set a reminder ",
                                                                                 @"open ",
                                                                                 @"wake me up ",
@@ -88,7 +88,7 @@ static void googiriUpdatePreferences() {
     NSDictionary *prefs = [NSDictionary dictionaryWithContentsOfFile:PrefPath];
     ////NSLog(@"prefs: %@", prefs);
     //NSLog(@"%@", PrefPath);
-    if(prefs == NULL || !prefs) {
+    if(prefs == nil || !prefs) {
         //options for settings
         //NSLog(@"PREFS ARE NULL :(");
         globalEnable = YES;
@@ -117,7 +117,8 @@ static void googiriUpdatePreferences() {
             temp = [prefs valueForKey:[NSString stringWithFormat:@"%iNames", h]];
             tempStr = temp ? (NSMutableString *)temp : nil;
 
-            if (tempStr != nil && names[h] != NULL) {
+            // if tempStr or names[h] is defined
+            if (tempStr != nil || names[h] != NULL) {
                 //create the array of names. Separate on the space and then append a space to each and then add to array
                 NSArray *justNamesArray = [tempStr componentsSeparatedByCharactersInSet:[NSCharacterSet whitespaceCharacterSet]];
                 justNamesArray = [justNamesArray filteredArrayUsingPredicate:[NSPredicate predicateWithFormat:@"SELF != ''"]];
@@ -130,6 +131,10 @@ static void googiriUpdatePreferences() {
             }
         }
 
+        NSLog(@"%@", intelligentRouting?@"YES":@"NO");
+        NSLog(@"%@", webserverAddress);
+        NSLog(@"%@", names);
+
     }
 
 }
@@ -139,26 +144,25 @@ static void googiriUpdatePreferences() {
 
 -(void)completeRecognitionWithResult:(id)result
 {
-    %log;
+    // %log;
     if (!globalEnable) {
         %orig;
         return;
     }
 
+    NSLog(@"%@", defaultHandler);
 
     // we want to use the defaultHandler to handle the event, unless it should be
     // -> overridden by another handler's name or intelligentRouting
 
     NSArray *otherHandlers = nil;
-    if (defaultHandler == kSiri) {
+    if ([defaultHandler intValue] == [kSiri intValue]) {
         otherHandlers = [[NSArray alloc] initWithObjects:kGoogle, kWebserver, nil];
-    } else if (defaultHandler == kGoogle) {
+    } else if ([defaultHandler intValue] == [kGoogle intValue]) {
         otherHandlers = [[NSArray alloc] initWithObjects:kSiri, kWebserver, nil];
-    } else if (defaultHandler == kWebserver) {
+    } else if ([defaultHandler intValue] == [kWebserver intValue]) {
         otherHandlers = [[NSArray alloc] initWithObjects:kSiri, kGoogle, nil];
     }
-
-    NSLog(@"%@", otherHandlers);
 
     for (int i = 0; i < [otherHandlers count]; ++i)
     {
@@ -168,15 +172,15 @@ static void googiriUpdatePreferences() {
         {
             if ([result rangeOfString:[[names objectAtIndex:[[otherHandlers objectAtIndex:i] intValue]] objectAtIndex:n]].location == 0) {
                 result = [result stringByReplacingOccurrencesOfString:[[names objectAtIndex:[[otherHandlers objectAtIndex:i] intValue]] objectAtIndex:n] withString:@""];
-                if ([otherHandlers objectAtIndex:i] == kSiri) {
+                if ([[otherHandlers objectAtIndex:i] intValue] == [kSiri intValue]) {
                     NSLog(@"FOUND SIRI QUERY");
                     latestQuery = result;
                     googiriOpenQueryInSiri();
                     [self cancelVoiceSearch];
-                } else if ([otherHandlers objectAtIndex:i] == kGoogle) {
+                } else if ([[otherHandlers objectAtIndex:i] intValue] == [kGoogle intValue]) {
                     NSLog(@"FOUND GOOGLE QUERY");
                     %orig;
-                } else if ([otherHandlers objectAtIndex:i] == kWebserver) {
+                } else if ([[otherHandlers objectAtIndex:i] intValue] == [kWebserver intValue]) {
                     // is webserver
                     // post stuff
                     NSLog(@"WOULD POST %@", result);
@@ -194,7 +198,8 @@ static void googiriUpdatePreferences() {
     }
 
     // if handler is google or webserver, check for system commands
-    if (intelligentRouting && (defaultHandler == kGoogle || defaultHandler == kWebserver)) {
+    if (intelligentRouting && ([defaultHandler intValue] == [kGoogle intValue] || [defaultHandler intValue] == [kWebserver intValue])) {
+        NSLog(@"ATTEMPTING INTELLIGENT ROUTING");
         for (int i = 0; i < [intelligentRoutingCommands count]; ++i)
         {
             if ([result rangeOfString:[intelligentRoutingCommands objectAtIndex:i]].location == 0) {
@@ -207,19 +212,19 @@ static void googiriUpdatePreferences() {
         }
     }
 
-    // nothing special, use deafult
-    if (defaultHandler == kSiri) {
-        NSLog(@"FOUND SIRI QUERY");
+    // nothing special, use default
+    if ([defaultHandler intValue] == [kSiri intValue]) {
+        NSLog(@"FOUND NORMAL SIRI QUERY");
         latestQuery = result;
         googiriOpenQueryInSiri();
         [self cancelVoiceSearch];
-    } else if (defaultHandler == kGoogle) {
-        NSLog(@"FOUND GOOGLE QUERY");
+    } else if ([defaultHandler intValue] == [kGoogle intValue]) {
+        NSLog(@"FOUND NORMAL GOOGLE QUERY");
         %orig;
-    } else if (defaultHandler == kWebserver) {
+    } else if ([defaultHandler intValue] == [kWebserver intValue]) {
         // is webserver
         // post stuff
-        NSLog(@"WOULD POST %@", result);
+        NSLog(@"WOULD NORMAL POST %@", result);
         if (webserverAddress != nil) {
             NSMutableURLRequest *request = [[NSMutableURLRequest alloc] init];
             [request setHTTPMethod:@"GET"];
@@ -256,8 +261,6 @@ static void reloadPrefsNotification(CFNotificationCenterRef center,
                                                    @"siri ",
                                                    @"hey siri ",
                                                    @"is siri ",
-                                                   @"Siri",
-                                                   @"siri",
                                                    nil],
            [[NSMutableArray alloc] initWithObjects:@"Google ",
                                                    @"hey Google ",
