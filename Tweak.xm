@@ -124,18 +124,20 @@ static void googiriUpdatePreferences() {
                 justNamesArray = [justNamesArray filteredArrayUsingPredicate:[NSPredicate predicateWithFormat:@"SELF != ''"]];
                 for (unsigned int i = 0; i < [justNamesArray count]; ++i)
                 {
-                    // add a space because string parsing
-                    [names[h] addObject:[[justNamesArray objectAtIndex:i] stringByAppendingString:@" "]];
+                    if (![names[h] containsObject:[[justNamesArray objectAtIndex:i] stringByAppendingString:@" "]]) {
+                        // add a space because string parsing
+                        [names[h] addObject:[[justNamesArray objectAtIndex:i] stringByAppendingString:@" "]];
+                    }
                 }
-                [justNamesArray release];
+                // [justNamesArray release];
             }
         }
 
-        NSLog(@"%@", intelligentRouting?@"YES":@"NO");
-        NSLog(@"%@", webserverAddress);
-        NSLog(@"%@", names);
-
     }
+    NSLog(@"%@", defaultHandler);
+    NSLog(@"%@", intelligentRouting?@"YES":@"NO");
+    NSLog(@"%@", webserverAddress);
+    NSLog(@"%@", names);
 
 }
 
@@ -198,7 +200,7 @@ static void googiriUpdatePreferences() {
     }
 
     // if handler is google or webserver, check for system commands
-    if (intelligentRouting && ([defaultHandler intValue] == [kGoogle intValue] || [defaultHandler intValue] == [kWebserver intValue])) {
+    if (intelligentRouting && (([defaultHandler intValue] == [kGoogle intValue]) || ([defaultHandler intValue] == [kWebserver intValue]))) {
         NSLog(@"ATTEMPTING INTELLIGENT ROUTING");
         for (int i = 0; i < [intelligentRoutingCommands count]; ++i)
         {
@@ -215,6 +217,7 @@ static void googiriUpdatePreferences() {
     // nothing special, use default
     if ([defaultHandler intValue] == [kSiri intValue]) {
         NSLog(@"FOUND NORMAL SIRI QUERY");
+        NSLog(@"%i", [defaultHandler intValue]);
         latestQuery = result;
         googiriOpenQueryInSiri();
         [self cancelVoiceSearch];
