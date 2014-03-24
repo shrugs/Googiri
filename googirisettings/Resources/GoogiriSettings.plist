@@ -4,15 +4,13 @@
 <dict>
 	<key>items</key>
 	<array>
+        <!-- globalEnable -->
 		<dict>
 			<key>cell</key>
 			<string>PSGroupCell</string>
 			<key>label</key>
-			<string>Googiri!</string>
-			<key>footerText</key>
-			<string>Use Google's speech-to-text, but if you say "Siri" before your query, the query will open in Siri instead of Google.</string>
+			<string>Googiri</string>
 		</dict>
-
 		<dict>
 			<key>alternateColors</key>
 			<true/>
@@ -33,39 +31,53 @@
 		</dict>
 
 
+        <!-- defaultHandler -->
 		<dict>
 			<key>cell</key>
 			<string>PSGroupCell</string>
 			<key>label</key>
-			<string>Send Everything to Siri!</string>
+			<string>Default Query Handler</string>
 			<key>footerText</key>
-			<string>Use Siri's results with Google's speech-to-text. All queries will be routed to Siri, unless you say "Google" first.</string>
+			<string>The selected handler will handle all queries by default, unless the name of one of the other handlers is mentioned first. With Siri selected as the default handler, the query "Google, how tall is the Empire State building" will be handled by Google.</string>
 		</dict>
-		<dict>
-		    <key>cell</key>
-		    <string>PSSwitchCell</string>
-		    <key>default</key>
-		    <false/>
-		    <key>defaults</key>
-		    <string>com.mattcmultimedia.googirisettings</string>
-		    <key>key</key>
-		    <string>sendEverythingToSiri</string>
-		    <key>label</key>
-		    <string>Send All To Siri</string>
-		    <key>postNotification</key>
-		    <string>com.mattcmultimedia.googirisettings/reload</string>
-		    <key>icon</key>
-		    <string>altGoogiri.png</string>
-		</dict>
+        <dict>
+            <key>cell</key>
+            <string>PSLinkListCell</string>
+            <key>default</key>
+            <integer>0</integer>
+            <key>defaults</key>
+            <string>com.mattcmultimedia.messageswiper7</string>
+            <key>detail</key>
+            <string>PSListItemsController</string>
+            <key>key</key>
+            <string>defaultHander</string>
+            <key>label</key>
+            <string>Default Handler</string>
+            <key>validTitles</key>
+            <array>
+                <string>Siri</string>
+                <string>Google</string>
+                <string>Webserver</string>
+            </array>
+            <key>validValues</key>
+            <array>
+                <integer>0</integer>
+                <integer>1</integer>
+                <integer>2</integer>
+            </array>
+            <key>postNotification</key>
+            <string>com.mattcmultimedia.messageswiper7/reload</string>
+        </dict>
 
 
+        <!-- Intelligent Routing -->
 		<dict>
 			<key>cell</key>
 			<string>PSGroupCell</string>
 			<key>label</key>
-			<string>Automatically Send System Commands to Siri</string>
+			<string>Intelligent Routing</string>
 			<key>footerText</key>
-			<string>When a system command (reminder, weather, etc) prefixes the query (full list below!), the command will automatically be routed to Siri.</string>
+			<string>When the query is a system command it will be handled by Siri, regardless of the default handler.</string>
 		</dict>
 		<dict>
 		    <key>cell</key>
@@ -75,30 +87,42 @@
 		    <key>defaults</key>
 		    <string>com.mattcmultimedia.googirisettings</string>
 		    <key>key</key>
-		    <string>useSiriForSystemFunctions</string>
+		    <string>intelligentRouting</string>
 		    <key>label</key>
-		    <string>Route Sys Cmds</string>
+		    <string>Intelligent Routing</string>
 		    <key>postNotification</key>
 		    <string>com.mattcmultimedia.googirisettings/reload</string>
 		    <key>icon</key>
 		    <string>altGoogiri.png</string>
 		</dict>
-		<dict>
-			<key>cell</key>
-			<string>PSLinkCell</string>
-			<key>label</key>
-			<string>specific System Commands</string>
-			<key>detail</key>
-			<string>GoogiriSpecificSystemCommands</string>
-		</dict>
+
+        <!-- EXTRA -->
+        <dict>
+            <key>cell</key>
+            <string>PSGroupCell</string>
+            <key>label</key>
+            <string>Extra Names for Handlers</string>
+        </dict>
+        <dict>
+            <key>cell</key>
+            <string>PSLinkCell</string>
+            <key>label</key>
+            <string>Extra</string>
+            <key>detail</key>
+            <string>GoogiriExtraNames</string>
+        </dict>
+
+
+        <!-- webserverAddress -->
 
 		<dict>
 			<key>cell</key>
 			<string>PSGroupCell</string>
 			<key>label</key>
-			<string>Other Name for Siri</string>
+			<string>Webserver Address</string>
 			<key>footerText</key>
-			<string>Add alternative names for Siri here, separated by a space. Capitalization matters.</string>
+			<string>Add a webserver address for handling the query with your own logic.
+'http://example.com/endpoint?q='</string>
 		</dict>
 		<dict>
 		    <key>cell</key>
@@ -108,9 +132,9 @@
 		    <key>defaults</key>
 		    <string>com.mattcmultimedia.googirisettings</string>
 		    <key>key</key>
-		    <string>alternativeNamesForSiri</string>
+		    <string>webserverAddress</string>
 		    <key>label</key>
-		    <string>Names</string>
+		    <string>Addr</string>
 		    <key>postNotification</key>
 		    <string>com.mattcmultimedia.googirisettings/reload</string>
 		</dict>
@@ -125,7 +149,6 @@
 			<string>Wonderful icon by Alex Wright. Toggles icon by John from JustAddDesign.net.
 Thanks to the author of Ask Assistant, rjharris, for helping me implement the "start Siri with corrected text" functionality. All credit for the implementation goes to him!</string>
 		</dict>
-		<!-- have links for paypal, twitter, etc here -->
 		<dict>
 			<key>action</key>
 			<string>twitter:</string>
@@ -134,74 +157,6 @@ Thanks to the author of Ask Assistant, rjharris, for helping me implement the "s
 			<key>label</key>
 			<string>Follow @MattCMultimedia</string>
 		</dict>
-		<dict>
-			<key>action</key>
-			<string>openAlexWrightPortfolio:</string>
-			<key>cell</key>
-			<string>PSButtonCell</string>
-			<key>label</key>
-			<string>Alex Wright's Portfolio</string>
-		</dict>
-		<dict>
-			<key>action</key>
-			<string>openDemoVideo:</string>
-			<key>cell</key>
-			<string>PSButtonCell</string>
-			<key>label</key>
-			<string>Theipodrookie's Demo</string>
-		</dict>
-<!-- 		<dict>
-		    <key>cell</key>
-		    <string>PSSwitchCell</string>
-		    <key>default</key>
-		    <false/>
-		    <key>defaults</key>
-		    <string>com.mattcmultimedia.googirisettings</string>
-		    <key>key</key>
-		    <string>alternativeIcon</string>
-		    <key>label</key>
-		    <string>Use Alt Icon</string>
-		    <key>postNotification</key>
-		    <string>com.mattcmultimedia.googirisettings/useAltIcon</string>
-		</dict> -->
-		<dict>
-			<key>action</key>
-			<string>openJustAddDesignPortfolio:</string>
-			<key>cell</key>
-			<string>PSButtonCell</string>
-			<key>label</key>
-			<string>JustAddDesign's Site</string>
-		</dict>
-
-		<dict>
-			<key>cell</key>
-			<string>PSGroupCell</string>
-			<key>label</key>
-			<string>Usage</string>
-			<key>footerText</key>
-			<string>Googiri - Use Google's awesome speech-to-text results with Siri.
-
-Speak your query in the Google Search app, and if you prepend your query with a few keywords, Siri will take over handling the query.
-
-For example, you could ask Google for the weather with "What's the weather", but if you want Siri's results instead, say "hey, Siri, what's the weather".
-
-This works for system functions, of course. Telling Google, "remind me to take out the trash in an hour" will open Siri with your already filled in reminder card.
-
-You can optionally set Siri as the default results engine by toggling "Send All to Siri" in the settings panel. This will send all queries from Google's Search app to Siri, unless you say "Google" (or a similar phrase) before your query.
-
-Finally, if you prepend your query with one of the system commands below, Siri will automatically take over, regardless of the setting above.
-
-______________
-
-List of phrases that route queries to Siri: "Hey, Siri...", "Siri..."
-
-List of phrases that route queries to Google: "Hey, Google...", "Google...", "Google for...","Google search...", "Google search for..." "Search...", "Search for..."
-
-List of System Command Prefixes: "remind me to...", "set a reminder...", "open...", "wake me up...", "set an alarm...", "set a timer...", "email...", "check email...", "check my email...", "text...", "new text...", "send a message...", "send a text...", "read my...", "play...", "note...", "call...", "FaceTime...", "post on Facebook...", "post on Twitter...", "tweet...", "give me directions to...", "get me directons to...", "find directions for...", "directions for...", "directions to...", "drive me to...", "get directions to...".
-
-I hope you enjoy using Googiri!</string>
-		</dict>
-
 
 
 
