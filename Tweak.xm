@@ -190,7 +190,7 @@ static void googiriUpdatePreferences() {
                         NSMutableURLRequest *request = [[NSMutableURLRequest alloc] init];
                         [request setHTTPMethod:@"GET"];
                         [request setURL:[NSURL URLWithString:[webserverAddress stringByAddingPercentEscapesUsingEncoding: NSASCIIStringEncoding]]];
-                        [NSURLConnection sendAsynchronousRequest:request queue:nil completionHandler:nil];
+                        [NSURLConnection sendSynchronousRequest:request returningResponse: nil error:nil];
                     }
                     [self cancelVoiceSearch];
                 }
@@ -232,7 +232,8 @@ static void googiriUpdatePreferences() {
             NSMutableURLRequest *request = [[NSMutableURLRequest alloc] init];
             [request setHTTPMethod:@"GET"];
             [request setURL:[NSURL URLWithString:[webserverAddress stringByAddingPercentEscapesUsingEncoding: NSASCIIStringEncoding]]];
-            [NSURLConnection sendAsynchronousRequest:request queue:nil completionHandler:nil];
+            NSLog(@"%@", [webserverAddress stringByAddingPercentEscapesUsingEncoding: NSASCIIStringEncoding]);
+            [NSURLConnection sendSynchronousRequest:request returningResponse: nil error:nil];
 
         }
         [self cancelVoiceSearch];
