@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+    <key>items</key>
+    <array>
+        <dict>
+            <key>cell</key>
+            <string>PSGroupCell</string>
+            <key>label</key>
+            <string>Other Names for Siri</string>
+            <key>footerText</key>
+            <string>Add alternative names for Siri here, separated by a space. Capitalization matters.</string>
+        </dict>
+        <dict>
+            <key>cell</key>
+            <string>PSEditTextCell</string>
+            <key>default</key>
+            <string></string>
+            <key>defaults</key>
+            <string>com.mattcmultimedia.googirisettings</string>
+            <key>key</key>
+            <string>0Names</string>
+            <key>label</key>
+            <string>Names</string>
+            <key>postNotification</key>
+            <string>com.mattcmultimedia.googirisettings/reload</string>
+        </dict>
+
+        <dict>
+            <key>cell</key>
+            <string>PSGroupCell</string>
+            <key>label</key>
+            <string>Other Names for Google</string>
+            <key>footerText</key>
+            <string>Add alternative names for Google here, separated by a space. Capitalization matters.</string>
+        </dict>
+        <dict>
+            <key>cell</key>
+            <string>PSEditTextCell</string>
+            <key>default</key>
+            <string></string>
+            <key>defaults</key>
+            <string>com.mattcmultimedia.googirisettings</string>
+            <key>key</key>
+            <string>1Names</string>
+            <key>label</key>
+            <string>Names</string>
+            <key>postNotification</key>
+            <string>com.mattcmultimedia.googirisettings/reload</string>
+        </dict>
+
+        <dict>
+            <key>cell</key>
+            <string>PSGroupCell</string>
+            <key>label</key>
+            <string>Other Names for your Webserver</string>
+            <key>footerText</key>
+            <string>Add alternative names for your Webserver here, separated by a space. Capitalization matters. Existing names: 'Jarvis', 'Jeeves'</string>
+        </dict>
+        <dict>
+            <key>cell</key>
+            <string>PSEditTextCell</string>
+            <key>default</key>
+            <string></string>
+            <key>defaults</key>
+            <string>com.mattcmultimedia.googirisettings</string>
+            <key>key</key>
+            <string>2Names</string>
+            <key>label</key>
+            <string>Names</string>
+            <key>postNotification</key>
+            <string>com.mattcmultimedia.googirisettings/reload</string>
+        </dict>
+
+
+    </array>
+    <key>title</key>
+    <string>Googiri</string>
+</dict>
+</plist>
