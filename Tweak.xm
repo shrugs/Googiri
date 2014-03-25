@@ -64,7 +64,7 @@ static BOOL globalEnable = YES;
 // addr
 static NSString *webserverAddress;
 // default handler for queries
-static NSNumber *defaultHandler = kSiri;
+static NSNumber *defaultHandler;
 // whether or not Googiri should route obvious system commands to Siri sans the 'Siri' keyword
 static BOOL intelligentRouting = YES;
 static NSArray *names;
@@ -90,10 +90,11 @@ static void googiriUpdatePreferences() {
     //NSLog(@"%@", PrefPath);
     if(prefs == nil || !prefs) {
         //options for settings
-        //NSLog(@"PREFS ARE NULL :(");
+        NSLog(@"PREFS ARE NULL :(");
         globalEnable = YES;
         defaultHandler = kSiri;
         intelligentRouting = YES;
+        webserverAddress = nil;
 
     } else {
 
@@ -108,7 +109,7 @@ static void googiriUpdatePreferences() {
         intelligentRouting = temp ? [temp boolValue] : YES;
 
         temp = [prefs valueForKey:@"webserverAddress"];
-        webserverAddress = temp ? temp : nil;
+        webserverAddress = temp ? (NSString *)temp : nil;
 
         NSMutableString *tempStr;
         for (int h = 0; h < 3; ++h)
@@ -185,12 +186,12 @@ static void googiriUpdatePreferences() {
                 } else if ([[otherHandlers objectAtIndex:i] intValue] == [kWebserver intValue]) {
                     // is webserver
                     // post stuff
-                    NSLog(@"WOULD POST %@", result);
+                    NSLog(@"test");
+                    NSLog(@"WOULD POST %@", [webserverAddress stringByAddingPercentEscapesUsingEncoding: NSASCIIStringEncoding]);
                     if (webserverAddress != nil) {
-                        NSMutableURLRequest *request = [[NSMutableURLRequest alloc] init];
-                        [request setHTTPMethod:@"GET"];
-                        [request setURL:[NSURL URLWithString:[webserverAddress stringByAddingPercentEscapesUsingEncoding: NSASCIIStringEncoding]]];
-                        [NSURLConnection sendSynchronousRequest:request returningResponse: nil error:nil];
+                        // NSURLRequest *request = [NSURLRequest requestWithURL:[NSURL URLWithString:[webserverAddress stringByAddingPercentEscapesUsingEncoding: NSASCIIStringEncoding]]];
+                        // NSLog(@"%@", [webserverAddress stringByAddingPercentEscapesUsingEncoding: NSASCIIStringEncoding]);
+                        // [NSURLConnection sendSynchronousRequest:request returningResponse: nil error:nil];
                     }
                     [self cancelVoiceSearch];
                 }
@@ -227,13 +228,20 @@ static void googiriUpdatePreferences() {
     } else if ([defaultHandler intValue] == [kWebserver intValue]) {
         // is webserver
         // post stuff
-        NSLog(@"WOULD NORMAL POST %@", result);
         if (webserverAddress != nil) {
-            NSMutableURLRequest *request = [[NSMutableURLRequest alloc] init];
-            [request setHTTPMethod:@"GET"];
-            [request setURL:[NSURL URLWithString:[webserverAddress stringByAddingPercentEscapesUsingEncoding: NSASCIIStringEncoding]]];
-            NSLog(@"%@", [webserverAddress stringByAddingPercentEscapesUsingEncoding: NSASCIIStringEncoding]);
-            [NSURLConnection sendSynchronousRequest:request returningResponse: nil error:nil];
+            NSLog(@"%@", webserverAddress);
+            NSLog(@"WOULD NORMAL GET %@", [webserverAddress stringByAddingPercentEscapesUsingEncoding: NSASCIIStringEncoding]);
+            NSMutableURLRequest *request = [NSMutableURLRequest requestWithURL:[NSURL URLWithString:[webserverAddress stringByAddingPercentEscapesUsingEncoding: NSASCIIStringEncoding]]
+                                                                   cachePolicy:NSURLRequestReloadIgnoringLocalAndRemoteCacheData
+                                                               timeoutInterval:10];
+
+            [request setHTTPMethod: @"GET"];
+
+                NSError *requestError;
+            NSURLResponse *urlResponse = nil;
+
+
+            [NSURLConnection sendSynchronousRequest:request returningResponse:&urlResponse error:&requestError];
 
         }
         [self cancelVoiceSearch];
