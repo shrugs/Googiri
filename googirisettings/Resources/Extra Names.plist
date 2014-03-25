@@ -10,7 +10,8 @@
             <key>label</key>
             <string>Other Names for Siri</string>
             <key>footerText</key>
-            <string>Add alternative names for Siri here, separated by a space. Capitalization matters.</string>
+            <string>Add alternative names for Siri here, separated by a space. Capitalization matters.
+Existing Name: "Siri"</string>
         </dict>
         <dict>
             <key>cell</key>
@@ -33,7 +34,8 @@
             <key>label</key>
             <string>Other Names for Google</string>
             <key>footerText</key>
-            <string>Add alternative names for Google here, separated by a space. Capitalization matters.</string>
+            <string>Add alternative names for Google here, separated by a space. Capitalization matters.
+Existing Name: "Google"</string>
         </dict>
         <dict>
             <key>cell</key>
@@ -56,7 +58,8 @@
             <key>label</key>
             <string>Other Names for your Webserver</string>
             <key>footerText</key>
-            <string>Add alternative names for your Webserver here, separated by a space. Capitalization matters. Existing names: 'Jarvis', 'Jeeves'</string>
+            <string>Add alternative names for your Webserver here, separated by a space. Capitalization matters.
+Existing Name: "Jarvis"</string>
         </dict>
         <dict>
             <key>cell</key>

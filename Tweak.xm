@@ -62,7 +62,7 @@ static NSMutableArray *intelligentRoutingCommands = [[NSMutableArray alloc] init
 static NSString *latestQuery = @"test";
 static BOOL globalEnable = YES;
 // addr
-static NSString *webserverAddress = @"";
+static NSMutableString *webserverAddress;
 // default handler for queries
 static NSNumber *defaultHandler;
 // whether or not Googiri should route obvious system commands to Siri sans the 'Siri' keyword
@@ -90,11 +90,11 @@ static void googiriUpdatePreferences() {
     //NSLog(@"%@", PrefPath);
     if(prefs == nil || !prefs) {
         //options for settings
-        NSLog(@"PREFS ARE NULL :(");
+        // NSLog(@"PREFS ARE NULL :(");
         globalEnable = YES;
         defaultHandler = kSiri;
         intelligentRouting = YES;
-        webserverAddress = @"";
+        webserverAddress = nil;
 
     } else {
 
@@ -109,7 +109,7 @@ static void googiriUpdatePreferences() {
         intelligentRouting = temp ? [temp boolValue] : YES;
 
         temp = [prefs valueForKey:@"webserverAddress"];
-        webserverAddress = temp ? (NSString *)temp : @"";
+        webserverAddress = temp ? [(NSString *)temp mutableCopy] : nil;
 
         NSMutableString *tempStr;
         for (int h = 0; h < 3; ++h)
@@ -135,10 +135,10 @@ static void googiriUpdatePreferences() {
         }
 
     }
-    NSLog(@"%@", defaultHandler);
-    NSLog(@"%@", intelligentRouting?@"YES":@"NO");
-    NSLog(@"%@", webserverAddress);
-    NSLog(@"%@", names);
+    // NSLog(@"%@", defaultHandler);
+    // NSLog(@"%@", intelligentRouting?@"YES":@"NO");
+    // NSLog(@"%@", webserverAddress);
+    // NSLog(@"%@", names);
 
 }
 
@@ -153,7 +153,7 @@ static void googiriUpdatePreferences() {
         return;
     }
 
-    NSLog(@"%@", defaultHandler);
+    // NSLog(@"%@", defaultHandler);
 
     // we want to use the defaultHandler to handle the event, unless it should be
     // -> overridden by another handler's name or intelligentRouting
@@ -176,22 +176,27 @@ static void googiriUpdatePreferences() {
             if ([result rangeOfString:[[names objectAtIndex:[[otherHandlers objectAtIndex:i] intValue]] objectAtIndex:n]].location == 0) {
                 result = [result stringByReplacingOccurrencesOfString:[[names objectAtIndex:[[otherHandlers objectAtIndex:i] intValue]] objectAtIndex:n] withString:@""];
                 if ([[otherHandlers objectAtIndex:i] intValue] == [kSiri intValue]) {
-                    NSLog(@"FOUND SIRI QUERY");
+                    // NSLog(@"FOUND SIRI QUERY");
                     latestQuery = result;
                     googiriOpenQueryInSiri();
                     [self cancelVoiceSearch];
                 } else if ([[otherHandlers objectAtIndex:i] intValue] == [kGoogle intValue]) {
-                    NSLog(@"FOUND GOOGLE QUERY");
+                    // NSLog(@"FOUND GOOGLE QUERY");
                     %orig;
                 } else if ([[otherHandlers objectAtIndex:i] intValue] == [kWebserver intValue]) {
                     // is webserver
                     // post stuff
-                    NSLog(@"test");
-                    NSLog(@"WOULD POST %@", [webserverAddress stringByAddingPercentEscapesUsingEncoding: NSASCIIStringEncoding]);
+                    // NSLog(@"test");
+                    // NSLog(@"WOULD POST %@", [webserverAddress stringByAddingPercentEscapesUsingEncoding: NSASCIIStringEncoding]);
                     if ((webserverAddress != nil) && ![webserverAddress isEqualToString:@""]) {
-                        // NSURLRequest *request = [NSURLRequest requestWithURL:[NSURL URLWithString:[webserverAddress stringByAddingPercentEscapesUsingEncoding: NSASCIIStringEncoding]]];
-                        // NSLog(@"%@", [webserverAddress stringByAddingPercentEscapesUsingEncoding: NSASCIIStringEncoding]);
-                        // [NSURLConnection sendSynchronousRequest:request returningResponse: nil error:nil];
+                        NSMutableURLRequest *request = [NSMutableURLRequest requestWithURL:[NSURL URLWithString:[webserverAddress stringByAppendingString:[result stringByAddingPercentEscapesUsingEncoding: NSASCIIStringEncoding]]]
+                                                                               cachePolicy:NSURLRequestReloadIgnoringLocalAndRemoteCacheData
+                                                                           timeoutInterval:10];
+
+                        [request setHTTPMethod: @"GET"];
+
+                        NSOperationQueue *queue = [[NSOperationQueue alloc] init];
+                        [NSURLConnection sendAsynchronousRequest:request queue:queue completionHandler:nil];
                     }
                     [self cancelVoiceSearch];
                 }
@@ -202,7 +207,7 @@ static void googiriUpdatePreferences() {
 
     // if handler is google or webserver, check for system commands
     if (intelligentRouting && (([defaultHandler intValue] == [kGoogle intValue]) || ([defaultHandler intValue] == [kWebserver intValue]))) {
-        NSLog(@"ATTEMPTING INTELLIGENT ROUTING");
+        // NSLog(@"ATTEMPTING INTELLIGENT ROUTING");
         for (int i = 0; i < [intelligentRoutingCommands count]; ++i)
         {
             if ([result rangeOfString:[intelligentRoutingCommands objectAtIndex:i]].location == 0) {
@@ -217,32 +222,26 @@ static void googiriUpdatePreferences() {
 
     // nothing special, use default
     if ([defaultHandler intValue] == [kSiri intValue]) {
-        NSLog(@"FOUND NORMAL SIRI QUERY");
-        NSLog(@"%i", [defaultHandler intValue]);
+        // NSLog(@"FOUND NORMAL SIRI QUERY");
+        // NSLog(@"%i", [defaultHandler intValue]);
         latestQuery = result;
         googiriOpenQueryInSiri();
         [self cancelVoiceSearch];
     } else if ([defaultHandler intValue] == [kGoogle intValue]) {
-        NSLog(@"FOUND NORMAL GOOGLE QUERY");
+        // NSLog(@"FOUND NORMAL GOOGLE QUERY");
         %orig;
     } else if ([defaultHandler intValue] == [kWebserver intValue]) {
         // is webserver
         // post stuff
         if ((webserverAddress != nil) && ![webserverAddress isEqualToString:@""]) {
-            NSLog(@"I'm about to crash, yay.");
-            NSLog(@"%@", webserverAddress);
-            NSLog(@"WOULD NORMAL GET %@", [webserverAddress stringByAddingPercentEscapesUsingEncoding: NSASCIIStringEncoding]);
-            NSMutableURLRequest *request = [NSMutableURLRequest requestWithURL:[NSURL URLWithString:[webserverAddress stringByAddingPercentEscapesUsingEncoding: NSASCIIStringEncoding]]
+            NSMutableURLRequest *request = [NSMutableURLRequest requestWithURL:[NSURL URLWithString:[webserverAddress stringByAppendingString:[result stringByAddingPercentEscapesUsingEncoding: NSASCIIStringEncoding]]]
                                                                    cachePolicy:NSURLRequestReloadIgnoringLocalAndRemoteCacheData
                                                                timeoutInterval:10];
 
             [request setHTTPMethod: @"GET"];
 
-                NSError *requestError;
-            NSURLResponse *urlResponse = nil;
-
-
-            [NSURLConnection sendSynchronousRequest:request returningResponse:&urlResponse error:&requestError];
+            NSOperationQueue *queue = [[NSOperationQueue alloc] init];
+            [NSURLConnection sendAsynchronousRequest:request queue:queue completionHandler:nil];
 
         }
         [self cancelVoiceSearch];
@@ -291,7 +290,6 @@ static void reloadPrefsNotification(CFNotificationCenterRef center,
                                                    @"google search ",
                                                    nil],
            [[NSMutableArray alloc] initWithObjects:@"Jarvis ",
-                                                   @"Jeeves ",
                                                    nil],
            nil
        ];
