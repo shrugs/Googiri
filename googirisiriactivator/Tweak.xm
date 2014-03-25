@@ -21,10 +21,9 @@ static AFConnection *latestConnection = nil;
 @implementation GoogiriData
 
 - (NSDictionary *)handleMessageNamed:(NSString *)name withUserInfo:(NSDictionary *)userinfo {
-    // NSLog(@"GOT MESSAGE YAY");
-    [[%c(LASimpleListener) sharedInstance] activateVirtualAssistant];
-
     if (![[userinfo objectForKey:@"query"] isEqualToString:@""] )
+        [[%c(LASimpleListener) sharedInstance] activateVirtualAssistant];
+
         [latestConnection startRequestWithCorrectedText:[userinfo objectForKey:@"query"] forSpeechIdentifier:@"00000000-0000-0000-0000-000000000000"];
 
     return nil;
