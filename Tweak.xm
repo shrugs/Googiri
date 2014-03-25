@@ -158,14 +158,7 @@ static void googiriUpdatePreferences() {
     // we want to use the defaultHandler to handle the event, unless it should be
     // -> overridden by another handler's name or intelligentRouting
 
-    NSArray *otherHandlers = nil;
-    if ([defaultHandler intValue] == [kSiri intValue]) {
-        otherHandlers = [[NSArray alloc] initWithObjects:kGoogle, kWebserver, nil];
-    } else if ([defaultHandler intValue] == [kGoogle intValue]) {
-        otherHandlers = [[NSArray alloc] initWithObjects:kSiri, kWebserver, nil];
-    } else if ([defaultHandler intValue] == [kWebserver intValue]) {
-        otherHandlers = [[NSArray alloc] initWithObjects:kSiri, kGoogle, nil];
-    }
+    NSArray *otherHandlers = [[NSArray alloc] initWithObjects:kSiri, kGoogle, kWebserver, nil];
 
     for (int i = 0; i < [otherHandlers count]; ++i)
     {
@@ -175,6 +168,7 @@ static void googiriUpdatePreferences() {
         {
             if ([result rangeOfString:[[names objectAtIndex:[[otherHandlers objectAtIndex:i] intValue]] objectAtIndex:n]].location == 0) {
                 result = [result stringByReplacingOccurrencesOfString:[[names objectAtIndex:[[otherHandlers objectAtIndex:i] intValue]] objectAtIndex:n] withString:@""];
+
                 if ([[otherHandlers objectAtIndex:i] intValue] == [kSiri intValue]) {
                     // NSLog(@"FOUND SIRI QUERY");
                     latestQuery = result;
