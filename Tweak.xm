@@ -92,7 +92,7 @@ static void googiriUpdatePreferences() {
         //options for settings
         // NSLog(@"PREFS ARE NULL :(");
         globalEnable = YES;
-        defaultHandler = kSiri;
+        defaultHandler = kGoogle;
         intelligentRouting = YES;
         webserverAddress = nil;
 
@@ -103,7 +103,7 @@ static void googiriUpdatePreferences() {
         globalEnable = temp ? [temp boolValue] : YES;
 
         temp = [prefs valueForKey:@"defaultHandler"];
-        defaultHandler = temp ? [NSNumber numberWithInteger:[temp intValue]] : kSiri;
+        defaultHandler = temp ? [NSNumber numberWithInteger:[temp intValue]] : kGoogle;
 
         temp = [prefs valueForKey:@"intelligentRouting"];
         intelligentRouting = temp ? [temp boolValue] : YES;
