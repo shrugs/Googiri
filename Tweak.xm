@@ -62,7 +62,7 @@ static NSMutableArray *intelligentRoutingCommands = [[NSMutableArray alloc] init
 static NSString *latestQuery = @"test";
 static BOOL globalEnable = YES;
 // addr
-static NSString *webserverAddress;
+static NSString *webserverAddress = @"";
 // default handler for queries
 static NSNumber *defaultHandler;
 // whether or not Googiri should route obvious system commands to Siri sans the 'Siri' keyword
@@ -94,7 +94,7 @@ static void googiriUpdatePreferences() {
         globalEnable = YES;
         defaultHandler = kSiri;
         intelligentRouting = YES;
-        webserverAddress = nil;
+        webserverAddress = @"";
 
     } else {
 
@@ -109,7 +109,7 @@ static void googiriUpdatePreferences() {
         intelligentRouting = temp ? [temp boolValue] : YES;
 
         temp = [prefs valueForKey:@"webserverAddress"];
-        webserverAddress = temp ? (NSString *)temp : nil;
+        webserverAddress = temp ? (NSString *)temp : @"";
 
         NSMutableString *tempStr;
         for (int h = 0; h < 3; ++h)
@@ -188,7 +188,7 @@ static void googiriUpdatePreferences() {
                     // post stuff
                     NSLog(@"test");
                     NSLog(@"WOULD POST %@", [webserverAddress stringByAddingPercentEscapesUsingEncoding: NSASCIIStringEncoding]);
-                    if (webserverAddress != nil) {
+                    if ((webserverAddress != nil) && ![webserverAddress isEqualToString:@""]) {
                         // NSURLRequest *request = [NSURLRequest requestWithURL:[NSURL URLWithString:[webserverAddress stringByAddingPercentEscapesUsingEncoding: NSASCIIStringEncoding]]];
                         // NSLog(@"%@", [webserverAddress stringByAddingPercentEscapesUsingEncoding: NSASCIIStringEncoding]);
                         // [NSURLConnection sendSynchronousRequest:request returningResponse: nil error:nil];
@@ -228,7 +228,8 @@ static void googiriUpdatePreferences() {
     } else if ([defaultHandler intValue] == [kWebserver intValue]) {
         // is webserver
         // post stuff
-        if (webserverAddress != nil) {
+        if ((webserverAddress != nil) && ![webserverAddress isEqualToString:@""]) {
+            NSLog(@"I'm about to crash, yay.");
             NSLog(@"%@", webserverAddress);
             NSLog(@"WOULD NORMAL GET %@", [webserverAddress stringByAddingPercentEscapesUsingEncoding: NSASCIIStringEncoding]);
             NSMutableURLRequest *request = [NSMutableURLRequest requestWithURL:[NSURL URLWithString:[webserverAddress stringByAddingPercentEscapesUsingEncoding: NSASCIIStringEncoding]]
