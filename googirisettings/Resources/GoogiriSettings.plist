@@ -38,7 +38,7 @@
 			<key>label</key>
 			<string>Default Query Handler</string>
 			<key>footerText</key>
-			<string>The selected handler will handle all queries by default, unless the name of one of the other handlers is mentioned first. With Siri selected as the default handler, the query "Google, how tall is the Empire State building" will be handled by Google.</string>
+			<string>The selected handler will handle all Google queries, unless the name of one of the other handlers is mentioned first. With Siri selected as the default handler, the query "Google, how tall is the Empire State Building" will be handled by Google and "Jarvis, turn the lights on" will trigger a GET request to a webserver of your choice.</string>
 		</dict>
         <dict>
             <key>cell</key>
