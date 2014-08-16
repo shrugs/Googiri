@@ -75,7 +75,6 @@ static NSArray *names;
 #define PrefPath @"/var/mobile/Library/Preferences/com.mattcmultimedia.googirisettings.plist"
 
 static void googiriOpenQueryInSiri() {
-
     CPDistributedMessagingCenter *messagingCenter = [%c(CPDistributedMessagingCenter) centerNamed:@"com.mattcmultimedia.googirisiriactivator"];
     rocketbootstrap_distributedmessagingcenter_apply(messagingCenter);
     [messagingCenter sendMessageName:@"googiriActivateSiriWithQuery" userInfo:[NSDictionary dictionaryWithObject:latestQuery forKey:@"query"]];
@@ -83,7 +82,7 @@ static void googiriOpenQueryInSiri() {
 }
 
 static void googiriUpdatePreferences() {
-    //NSLog(@"GOOGIRI PREFS LOADED");
+    // NSLog(@"GOOGIRI PREFS LOADED");
     NSDictionary *prefs = [NSDictionary dictionaryWithContentsOfFile:PrefPath];
     ////NSLog(@"prefs: %@", prefs);
     //NSLog(@"%@", PrefPath);
@@ -169,18 +168,18 @@ static void googiriUpdatePreferences() {
                 result = [result stringByReplacingOccurrencesOfString:[[names objectAtIndex:[[otherHandlers objectAtIndex:i] intValue]] objectAtIndex:n] withString:@""];
 
                 if ([[otherHandlers objectAtIndex:i] intValue] == [kSiri intValue]) {
-                    // NSLog(@"FOUND SIRI QUERY");
+                    NSLog(@"FOUND SIRI QUERY");
                     latestQuery = result;
                     googiriOpenQueryInSiri();
                     [self cancelVoiceSearch];
                 } else if ([[otherHandlers objectAtIndex:i] intValue] == [kGoogle intValue]) {
-                    // NSLog(@"FOUND GOOGLE QUERY");
+                    NSLog(@"FOUND GOOGLE QUERY");
                     %orig;
                 } else if ([[otherHandlers objectAtIndex:i] intValue] == [kWebserver intValue]) {
                     // is webserver
                     // post stuff
                     // NSLog(@"test");
-                    // NSLog(@"WOULD POST %@", [webserverAddress stringByAddingPercentEscapesUsingEncoding: NSASCIIStringEncoding]);
+                    NSLog(@"WOULD POST %@", [webserverAddress stringByAddingPercentEscapesUsingEncoding: NSASCIIStringEncoding]);
                     if ((webserverAddress != nil) && ![webserverAddress isEqualToString:@""]) {
                         NSMutableURLRequest *request = [NSMutableURLRequest requestWithURL:[NSURL URLWithString:[webserverAddress stringByAppendingString:[result stringByAddingPercentEscapesUsingEncoding: NSASCIIStringEncoding]]]
                                                                                cachePolicy:NSURLRequestReloadIgnoringLocalAndRemoteCacheData
