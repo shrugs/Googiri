@@ -30,6 +30,24 @@
 		    <string>altGoogiri.png</string>
 		</dict>
 
+        <dict>
+            <key>cell</key>
+            <string>PSSwitchCell</string>
+            <key>default</key>
+            <true/>
+            <key>defaults</key>
+            <string>com.mattcmultimedia.googirisettings</string>
+            <key>key</key>
+            <string>switchBack</string>
+            <key>label</key>
+            <string>Switch Back</string>
+            <key>postNotification</key>
+            <string>com.mattcmultimedia.googirisettings/reload</string>
+            <key>icon</key>
+            <string>altGoogiri.png</string>
+            <key>footerText</key>
+            <string>Optinally switch back to the most recent application after triggering Siri.</string>
+        </dict>
 
         <!-- defaultHandler -->
 		<dict>

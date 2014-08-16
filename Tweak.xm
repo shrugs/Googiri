@@ -60,6 +60,7 @@ static NSMutableArray *intelligentRoutingCommands = [[NSMutableArray alloc] init
 //TODO: look at how Google parses the returned data
 static NSString *latestQuery = @"test";
 static BOOL globalEnable = YES;
+static BOOL switchBack = YES;
 // addr
 static NSMutableString *webserverAddress;
 // default handler for queries
@@ -77,7 +78,10 @@ static NSArray *names;
 static void googiriOpenQueryInSiri() {
     CPDistributedMessagingCenter *messagingCenter = [%c(CPDistributedMessagingCenter) centerNamed:@"com.mattcmultimedia.googirisiriactivator"];
     rocketbootstrap_distributedmessagingcenter_apply(messagingCenter);
-    [messagingCenter sendMessageName:@"googiriActivateSiriWithQuery" userInfo:[NSDictionary dictionaryWithObject:latestQuery forKey:@"query"]];
+    [messagingCenter sendMessageName:@"googiriActivateSiriWithQuery" userInfo:[NSDictionary dictionaryWithObjectsAndKeys:
+                                                                                            latestQuery, @"query",
+                                                                                            [NSNumber numberWithBool:switchBack], @"switchBack",
+                                                                                        nil]];
 
 }
 
@@ -95,6 +99,9 @@ static void googiriUpdatePreferences() {
         id temp;
         temp = [prefs valueForKey:@"globalEnable"];
         globalEnable = temp ? [temp boolValue] : YES;
+
+        temp = [prefs valueForKey:@"switchBack"];
+        switchBack = temp ? [temp boolValue] : YES;
 
         temp = [prefs valueForKey:@"defaultHandler"];
         defaultHandler = temp ? [NSNumber numberWithInteger:[temp intValue]] : kGoogle;
@@ -168,7 +175,6 @@ static void googiriUpdatePreferences() {
                 } else if ([[otherHandlers objectAtIndex:i] intValue] == [kWebserver intValue]) {
                     // is webserver
                     // post stuff
-                    // NSLog(@"test");
                     // NSLog(@"WOULD POST %@", [webserverAddress stringByAddingPercentEscapesUsingEncoding: NSASCIIStringEncoding]);
                     if ((webserverAddress != nil) && ![webserverAddress isEqualToString:@""]) {
                         NSMutableURLRequest *request = [NSMutableURLRequest requestWithURL:[NSURL URLWithString:[webserverAddress stringByAppendingString:[result stringByAddingPercentEscapesUsingEncoding: NSASCIIStringEncoding]]]
