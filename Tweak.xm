@@ -82,13 +82,9 @@ static void googiriOpenQueryInSiri() {
 }
 
 static void googiriUpdatePreferences() {
-    // NSLog(@"GOOGIRI PREFS LOADED");
     NSDictionary *prefs = [NSDictionary dictionaryWithContentsOfFile:PrefPath];
-    ////NSLog(@"prefs: %@", prefs);
-    //NSLog(@"%@", PrefPath);
     if(prefs == nil || !prefs) {
         //options for settings
-        // NSLog(@"PREFS ARE NULL :(");
         globalEnable = YES;
         defaultHandler = kGoogle;
         intelligentRouting = YES;
@@ -133,10 +129,6 @@ static void googiriUpdatePreferences() {
         }
 
     }
-    // NSLog(@"%@", defaultHandler);
-    // NSLog(@"%@", intelligentRouting?@"YES":@"NO");
-    // NSLog(@"%@", webserverAddress);
-    // NSLog(@"%@", names);
 
 }
 
@@ -168,18 +160,16 @@ static void googiriUpdatePreferences() {
                 result = [result stringByReplacingOccurrencesOfString:[[names objectAtIndex:[[otherHandlers objectAtIndex:i] intValue]] objectAtIndex:n] withString:@""];
 
                 if ([[otherHandlers objectAtIndex:i] intValue] == [kSiri intValue]) {
-                    NSLog(@"FOUND SIRI QUERY");
                     latestQuery = result;
                     googiriOpenQueryInSiri();
                     [self cancelVoiceSearch];
                 } else if ([[otherHandlers objectAtIndex:i] intValue] == [kGoogle intValue]) {
-                    NSLog(@"FOUND GOOGLE QUERY");
                     %orig;
                 } else if ([[otherHandlers objectAtIndex:i] intValue] == [kWebserver intValue]) {
                     // is webserver
                     // post stuff
                     // NSLog(@"test");
-                    NSLog(@"WOULD POST %@", [webserverAddress stringByAddingPercentEscapesUsingEncoding: NSASCIIStringEncoding]);
+                    // NSLog(@"WOULD POST %@", [webserverAddress stringByAddingPercentEscapesUsingEncoding: NSASCIIStringEncoding]);
                     if ((webserverAddress != nil) && ![webserverAddress isEqualToString:@""]) {
                         NSMutableURLRequest *request = [NSMutableURLRequest requestWithURL:[NSURL URLWithString:[webserverAddress stringByAppendingString:[result stringByAddingPercentEscapesUsingEncoding: NSASCIIStringEncoding]]]
                                                                                cachePolicy:NSURLRequestReloadIgnoringLocalAndRemoteCacheData
@@ -199,7 +189,6 @@ static void googiriUpdatePreferences() {
 
     // if handler is google or webserver, check for system commands
     if (intelligentRouting && (([defaultHandler intValue] == [kGoogle intValue]) || ([defaultHandler intValue] == [kWebserver intValue]))) {
-        // NSLog(@"ATTEMPTING INTELLIGENT ROUTING");
         for (int i = 0; i < [intelligentRoutingCommands count]; ++i)
         {
             if ([result rangeOfString:[intelligentRoutingCommands objectAtIndex:i]].location == 0) {
