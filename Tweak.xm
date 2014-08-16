@@ -2,8 +2,7 @@
 
 
 #import "GoogleHeaders/GMOEcoutezController.h"
-#import "GoogleHeaders/GMOSearchPaneController.h"
-#import <iOS7/PrivateFrameworks/AppSupport/CPDistributedMessagingCenter.h>
+#import <iOS/iOS7/PrivateFrameworks/AppSupport/CPDistributedMessagingCenter.h>
 #import <RocketBootstrap/rocketbootstrap.h>
 
 static NSNumber *kSiri = [NSNumber numberWithInteger: 0];

@@ -143,10 +143,10 @@
 			<key>cell</key>
 			<string>PSGroupCell</string>
 			<key>label</key>
-			<string>© MattCMultimedia, AKA Shrugs 2014</string>
+			<string>Shrugs (Matt Condon)</string>
 			<key>footerText</key>
 			<string>Wonderful icon by Alex Wright. Toggles icon by John from JustAddDesign.net.
-Thanks to the author of Ask Assistant, rjharris, for helping me implement the "start Siri with corrected text" functionality. All credit for the implementation goes to him!</string>
+Thanks to the author of Ask Assistant, rjharris, for helping me implement the "start Siri with corrected text" functionality.</string>
 		</dict>
 		<dict>
 			<key>action</key>
@@ -154,7 +154,7 @@ Thanks to the author of Ask Assistant, rjharris, for helping me implement the "s
 			<key>cell</key>
 			<string>PSButtonCell</string>
 			<key>label</key>
-			<string>Follow @MattCMultimedia</string>
+			<string>Follow @Shrugs</string>
 		</dict>
 
 
