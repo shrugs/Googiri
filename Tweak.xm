@@ -1,7 +1,11 @@
 
 
 
-#import "GoogleHeaders/GMOEcoutezController.h"
+@interface GMOEcoutezController : NSObject
+-(void)setRecognitionResult:(id)arg1;
+-(void)cancelRecognition;
+@end
+
 #import <iOS/iOS7/PrivateFrameworks/AppSupport/CPDistributedMessagingCenter.h>
 #import <RocketBootstrap/rocketbootstrap.h>
 
@@ -142,10 +146,10 @@ static void googiriUpdatePreferences() {
 
 %hook GMOEcoutezController
 
--(void)completeRecognitionWithResult:(id)result
+-(void)setRecognitionResult:(NSString *)result
 {
-    // %log;
-    if (!globalEnable) {
+
+    if (!globalEnable || !result) {
         %orig;
         return;
     }
@@ -169,7 +173,7 @@ static void googiriUpdatePreferences() {
                 if ([[otherHandlers objectAtIndex:i] intValue] == [kSiri intValue]) {
                     latestQuery = result;
                     googiriOpenQueryInSiri();
-                    [self cancelVoiceSearch];
+                    [self cancelRecognition];
                 } else if ([[otherHandlers objectAtIndex:i] intValue] == [kGoogle intValue]) {
                     %orig;
                 } else if ([[otherHandlers objectAtIndex:i] intValue] == [kWebserver intValue]) {
@@ -186,7 +190,7 @@ static void googiriUpdatePreferences() {
                         NSOperationQueue *queue = [[NSOperationQueue alloc] init];
                         [NSURLConnection sendAsynchronousRequest:request queue:queue completionHandler:nil];
                     }
-                    [self cancelVoiceSearch];
+                    [self cancelRecognition];
                 }
                 return;
             }
@@ -201,7 +205,7 @@ static void googiriUpdatePreferences() {
                 // yay, route to siri
                 latestQuery = result;
                 googiriOpenQueryInSiri();
-                [self cancelVoiceSearch];
+                [self cancelRecognition];
                 return;
             }
         }
@@ -213,7 +217,7 @@ static void googiriUpdatePreferences() {
         // NSLog(@"%i", [defaultHandler intValue]);
         latestQuery = result;
         googiriOpenQueryInSiri();
-        [self cancelVoiceSearch];
+        [self cancelRecognition];
     } else if ([defaultHandler intValue] == [kGoogle intValue]) {
         // NSLog(@"FOUND NORMAL GOOGLE QUERY");
         %orig;
@@ -231,7 +235,7 @@ static void googiriUpdatePreferences() {
             [NSURLConnection sendAsynchronousRequest:request queue:queue completionHandler:nil];
 
         }
-        [self cancelVoiceSearch];
+        [self cancelRecognition];
     }
     return;
 }

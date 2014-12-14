@@ -30,7 +30,7 @@
 		    <string>altGoogiri.png</string>
 		</dict>
 
-        <dict>
+<!--         <dict>
             <key>cell</key>
             <string>PSSwitchCell</string>
             <key>default</key>
@@ -47,7 +47,7 @@
             <string>altGoogiri.png</string>
             <key>footerText</key>
             <string>Optinally switch back to the most recent application after triggering Siri.</string>
-        </dict>
+        </dict> -->
 
         <!-- defaultHandler -->
 		<dict>
@@ -172,7 +172,7 @@ Thanks to the author of Ask Assistant, rjharris, for helping me implement the "s
 			<key>cell</key>
 			<string>PSButtonCell</string>
 			<key>label</key>
-			<string>Follow @Shrugs</string>
+			<string>Follow @mattgcondon</string>
 		</dict>
 
 

@@ -22,9 +22,9 @@ static AFConnection *latestConnection = nil;
 - (NSDictionary *)handleMessageNamed:(NSString *)name withUserInfo:(NSDictionary *)userinfo {
     if (![[userinfo objectForKey:@"query"] isEqualToString:@""] )
 
-        if ([[userinfo objectForKey:@"switchBack"] boolValue]) {
-            [[LAActivator sharedInstance] sendEvent:[LAEvent eventWithName:@"tevs"] toListenerWithName:@"jp.ashikase.lastapp"];
-        }
+        // if ([[userinfo objectForKey:@"switchBack"] boolValue]) {
+        //     [[LAActivator sharedInstance] sendEvent:[LAEvent eventWithName:@"tevs"] toListenerWithName:@"jp.ashikase.lastapp"];
+        // }
 
         // activate Siri here
         [[LAActivator sharedInstance] sendEvent:[LAEvent eventWithName:@"blah"] toListenerWithName: @"libactivator.system.virtual-assistant"];
