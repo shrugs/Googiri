@@ -5,24 +5,19 @@
 //
 // STATIC SETTINGS VARIABLES
 //
-
 static NSString *latestQuery;
 static BOOL globalEnable = YES;
-// addr
 static NSMutableString *webserverAddress;
-// default handler for queries
 static Handler defaultHandler;
-// whether or not Googiri should route obvious system commands to Siri sans the 'Siri' keyword
 static NSArray *names;
 
+// things I need references to at some point
 static GMOVoiceRecognitionView *voiceRecognitionView;
 static GMORootViewController *rootViewController;
 
 
-
-
-
 #define PrefPath @"/var/mobile/Library/Preferences/com.mattcmultimedia.googirisettings.plist"
+
 
 static void googiriOpenQueryInSiri() {
     CPDistributedMessagingCenter *messagingCenter = [%c(CPDistributedMessagingCenter) centerNamed:@"com.mattcmultimedia.googirisiriactivator"];
@@ -99,14 +94,15 @@ static void googiriUpdatePreferences() {
 
 }
 
+
 %hook GMORootViewController
+// keep reference to GMORootViewController
 - (id)init
 {
     rootViewController = %orig;
     return rootViewController;
 }
 %end
-
 
 %hook GMOSearchApplication
 
@@ -128,9 +124,10 @@ static void googiriUpdatePreferences() {
             NSDictionary *responseOptions = [NSJSONSerialization JSONObjectWithData:data options:kNilOptions error:&error];
 
             if (error != nil) {
-                NSLog(@"[GOOGIRI] Error parsing JSON.");
+                // NSLog(@"[GOOGIRI] Error parsing JSON.");
+                return;
             } else {
-                NSLog(@"[GOOGIRI] Response: %@", responseOptions);
+                // NSLog(@"[GOOGIRI] Response: %@", responseOptions);
 
                 // if they want to do an activator action, do that
                 if ([responseOptions objectForKey:@"activator"]) {
@@ -139,13 +136,13 @@ static void googiriUpdatePreferences() {
                     [messagingCenter sendMessageName:@"googiriActivateActivatorWithListener" userInfo:[NSDictionary dictionaryWithObjectsAndKeys:
                                                                                                                   [responseOptions objectForKey:@"activator"], @"listener",
                                                                                                                   nil]];
-                }
-                if ([responseOptions objectForKey:@"image"] || [responseOptions objectForKey:@"text"]) {
-                    // if we got an image or text, show the alert view
+                } else if ([responseOptions objectForKey:@"text"]) {
+                    // otherwise if we got text, show the alert view
                     NSLog(@"[GOOGIRI] Got text: %@", [responseOptions objectForKey:@"text"]);
                     dispatch_async(dispatch_get_main_queue(), ^{
 
                         SCLAlertView *alert = [[SCLAlertView alloc] init];
+                        NSLog(@"[GOOGIRI] %@", rootViewController);
 
                         [alert showTitle:rootViewController
                                    title:@"Congratulations"
