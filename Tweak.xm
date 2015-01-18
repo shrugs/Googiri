@@ -138,18 +138,37 @@ static void googiriUpdatePreferences() {
                                                                                                                   nil]];
                 } else if ([responseOptions objectForKey:@"text"]) {
                     // otherwise if we got text, show the alert view
-                    NSLog(@"[GOOGIRI] Got text: %@", [responseOptions objectForKey:@"text"]);
                     dispatch_async(dispatch_get_main_queue(), ^{
 
-                        SCLAlertView *alert = [[SCLAlertView alloc] init];
-                        NSLog(@"[GOOGIRI] %@", rootViewController);
+                        NSString *defaultTitle = @"Success";
+                        SCLAlertViewStyle alertStyle = Success;
+                        if ([responseOptions objectForKey:@"style"]) {
+                            NSString *s = [responseOptions objectForKey:@"style"];
+                            if ([s isEqualToString:@"success"]) {
+                                alertStyle = Success;
+                                defaultTitle = @"Booyah!";
+                            } else if ([s isEqualToString:@"error"]) {
+                                alertStyle = Error;
+                                defaultTitle = @"Uh oh!";
+                            } else if ([s isEqualToString:@"notice"]) {
+                                alertStyle = Notice;
+                                defaultTitle = @"Check it!";
+                            } else if ([s isEqualToString:@"warning"]) {
+                                alertStyle = Warning;
+                                defaultTitle = @"Whoa There!";
+                            } else if ([s isEqualToString:@"info"]) {
+                                alertStyle = Info;
+                                defaultTitle = @"FYI BTW";
+                            }
+                        }
 
+                        SCLAlertView *alert = [[SCLAlertView alloc] init];
                         [alert showTitle:rootViewController
-                                   title:@"Congratulations"
-                                subTitle:@"Operation successfully completed."
-                                   style:Success
-                        closeButtonTitle:@"Done"
-                                duration:0.0f];
+                                   title:[responseOptions objectForKey:@"title"] ? [responseOptions objectForKey:@"title"] : defaultTitle
+                                subTitle:[responseOptions objectForKey:@"text"]
+                                   style:alertStyle
+                        closeButtonTitle:[responseOptions objectForKey:@"doneText"] ? [responseOptions objectForKey:@"doneText"] : @"Done!"
+                                duration:[responseOptions objectForKey:@"duration"] ? [[responseOptions objectForKey:@"duration"] floatValue] : 0.0f];
                     });
 
                 }

@@ -20,8 +20,11 @@ The best use case is in home automation; use Googiri to send Google-quality spee
 Response JSON (check out the example server) can contain the following fields:
 
 
-| Property | Description |
-| ----- | ------ |
-| text       | **string** - arbitrary text to display to the user |
-| dialogType | **string** - "success", "error", "notice", "warning", "info" |
-| activator  | **string** - the unique name of an activator listener to trigger on the device (see a list of installed listeners by running "activator listeners" via ssh on your device) |
+| Property | Type | Description | Default |
+| ----- | ------ | ----- | ----- |
+| title | **string** | Title of the alert view | None |
+| text | **string** | Text of the alert view | None |
+| style | **string** | style of the alert view - "success", "error", "notice", "warning", "info" | "success" |
+| activator  | **string** | the unique name of an activator listener to trigger on the device (see a list of installed listeners by running "activator listeners" via ssh on your device) | None |
+| doneText | **string** | alert view done button text | "Done!" |
+| duration | **float** | duration alert view stays on screen. 0.0f is forever | 0.0f |
