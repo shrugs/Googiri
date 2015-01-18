@@ -28,24 +28,29 @@ static AFConnection *latestConnection = nil;
 //      GoogiriData Stuff
 //________________________________________________________________
 @interface GoogiriData : NSObject
-- (NSDictionary *)handleMessageNamed:(NSString *)name withUserInfo:(NSDictionary *)userinfo;
+- (NSDictionary *)handleMessageNamed:(NSString *)name withUserInfo:(NSDictionary *)userInfo;
 @end
 
 
 @implementation GoogiriData
 
-- (NSDictionary *)handleMessageNamed:(NSString *)name withUserInfo:(NSDictionary *)userinfo {
-    if (![[userinfo objectForKey:@"query"] isEqualToString:@""] )
-        // NSLog(@"[GOOGIRI] Got message...");
+- (NSDictionary *)handleMessageNamed:(NSString *)name withUserInfo:(NSDictionary *)userInfo {
 
-        // activate Siri here
-        [[LAActivator sharedInstance] sendEvent:[LAEvent eventWithName:@"blah"] toListenerWithName: @"libactivator.system.virtual-assistant"];
-        // wait 0.3 seconds and then inject into Siri
-        dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 0.3 * NSEC_PER_SEC), dispatch_get_main_queue(), ^{
-            // NSLog(@"[GOOGIRI] Injecting into Siri: %@", [userinfo objectForKey:@"query"]);
+    if ([name isEqualToString:@"googiriActivateSiriWithQuery"]) {
+        if (![[userInfo objectForKey:@"query"] isEqualToString:@""] )
+            // NSLog(@"[GOOGIRI] Got message...");
 
-            [latestConnection startRequestWithText:[userinfo objectForKey:@"query"]];
-        });
+            // activate Siri here
+            [[LAActivator sharedInstance] sendEvent:[LAEvent eventWithName:@"blah"] toListenerWithName:@"libactivator.system.virtual-assistant"];
+            // wait 0.3 seconds and then inject into Siri
+            dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 0.3 * NSEC_PER_SEC), dispatch_get_main_queue(), ^{
+                // NSLog(@"[GOOGIRI] Injecting into Siri: %@", [userInfo objectForKey:@"query"]);
+
+                [latestConnection startRequestWithText:[userInfo objectForKey:@"query"]];
+            });
+    } else if ([name isEqualToString:@"googiriActivateActivatorWithListener"]) {
+        [[LAActivator sharedInstance] sendEvent:[LAEvent eventWithName:@"blah"] toListenerWithName:[userInfo objectForKey:@"listener"]];
+    }
 
     return nil;
 }
@@ -64,6 +69,7 @@ static AFConnection *latestConnection = nil;
 
     // Register Messages
     [messagingCenter registerForMessageName:@"googiriActivateSiriWithQuery" target:googiriData selector:@selector(handleMessageNamed:withUserInfo:)];
+    [messagingCenter registerForMessageName:@"googiriActivateActivatorWithListener" target:googiriData selector:@selector(handleMessageNamed:withUserInfo:)];
 
     return %orig;
 }

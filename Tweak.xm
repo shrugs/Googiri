@@ -169,7 +169,39 @@ static void googiriUpdatePreferences() {
         [request setHTTPMethod: @"GET"];
 
         NSOperationQueue *queue = [[NSOperationQueue alloc] init];
-        [NSURLConnection sendAsynchronousRequest:request queue:queue completionHandler:nil];
+        [NSURLConnection sendAsynchronousRequest:request queue:queue completionHandler:^(NSURLResponse *response, NSData *data, NSError *connectionError) {
+            NSError *error = nil;
+            NSDictionary *responseOptions = [NSJSONSerialization JSONObjectWithData:data options:kNilOptions error:&error];
+
+            if (error != nil) {
+                NSLog(@"[GOOGIRI] Error parsing JSON.");
+            } else {
+                NSLog(@"[GOOGIRI] Response: %@", responseOptions);
+
+                // if they want to do an activator action, do that
+                if ([responseOptions objectForKey:@"activator"]) {
+                    CPDistributedMessagingCenter *messagingCenter = [%c(CPDistributedMessagingCenter) centerNamed:@"com.mattcmultimedia.googirisiriactivator"];
+                    rocketbootstrap_distributedmessagingcenter_apply(messagingCenter);
+                    [messagingCenter sendMessageName:@"googiriActivateActivatorWithListener" userInfo:[NSDictionary dictionaryWithObjectsAndKeys:
+                                                                                                                  [responseOptions objectForKey:@"activator"], @"listener",
+                                                                                                                  nil]];
+                }
+                if ([responseOptions objectForKey:@"image"] || [responseOptions objectForKey:@"text"]) {
+                    // if we got an image or text, show the alert view
+                    NSLog(@"[GOOGIRI] Got text: %@", [responseOptions objectForKey:@"text"]);
+                    dispatch_async(dispatch_get_main_queue(), ^{
+                        UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"YO!"
+                                                                        message:[responseOptions objectForKey:@"text"]
+                                                                       delegate:nil
+                                                              cancelButtonTitle:@"Neat"
+                                                              otherButtonTitles:nil];
+                        [alert show];
+                    });
+
+                }
+
+            }
+        }];
     }
 }
 
