@@ -8,6 +8,33 @@
 @end
 
 //
+// GMOSearchApplication
+//
+@interface GMOSearchApplication : NSObject
+@property (nonatomic,retain) UIWindow* window;
++ (id)sharedApplication;
+
+// my added methods
+- (void)googiriSendResult:(NSString *)text toWebserver:(NSString *)webserver;
+@end
+
+//
+// GMOVoiceSearchViewController + GMOEcoutezControllerDelegate
+//
+@protocol GMOEcoutezControllerDelegate
+-(void)ecoutezControllerDidCompleteRecognitionWithResult:(id)arg1;
+@end
+@interface GMOVoiceSearchViewController : UIViewController <GMOEcoutezControllerDelegate>
+@end
+
+//
+// GMOVoiceRecognitionView
+//
+@interface GMOVoiceRecognitionView : UIView
+- (void)cancelButtonPress:(id)arg1;
+@end
+
+//
 // CPDistributedMessagingCenter
 //
 @interface CPDistributedMessagingCenter : NSObject
@@ -15,22 +42,24 @@
 - (BOOL)sendMessageName:(id)arg1 userInfo:(id)arg2;
 @end
 
+//
 // RocketBootstrap
+//
 #import <RocketBootstrap/rocketbootstrap.h>
 
+//
+// Handlers
+//
 typedef enum {
     kSiri,
     kGoogle,
     kWebserver
 } Handler;
 
-@protocol GMOEcoutezControllerDelegate
--(void)ecoutezControllerDidCompleteRecognitionWithResult:(id)arg1;
-@end
-@interface GMOVoiceSearchViewController : UIViewController <GMOEcoutezControllerDelegate>
 
-@end
-
+//
+// STATIC SETTINGS VARIABLES
+//
 
 static NSString *latestQuery;
 static BOOL globalEnable = YES;
@@ -40,6 +69,8 @@ static NSMutableString *webserverAddress;
 static Handler defaultHandler;
 // whether or not Googiri should route obvious system commands to Siri sans the 'Siri' keyword
 static NSArray *names;
+
+static GMOVoiceRecognitionView *voiceRecognitionView;
 
 
 
@@ -123,6 +154,38 @@ static void googiriUpdatePreferences() {
 }
 
 
+%hook GMOSearchApplication
+
+%new
+- (void)googiriSendResult:(NSString *)text toWebserver:(NSString *)webserver
+{
+    NSLog(@"[GOOGIRI] googiriSendResult: %@ toWebserver: %@", text, webserver);
+
+    if ((webserver != nil) && ![webserver isEqualToString:@""]) {
+        NSMutableURLRequest *request = [NSMutableURLRequest requestWithURL:[NSURL URLWithString:[webserver stringByAppendingString:[text stringByAddingPercentEscapesUsingEncoding: NSASCIIStringEncoding]]]
+                                                               cachePolicy:NSURLRequestReloadIgnoringLocalCacheData
+                                                           timeoutInterval:10];
+
+        [request setHTTPMethod: @"GET"];
+
+        NSOperationQueue *queue = [[NSOperationQueue alloc] init];
+        [NSURLConnection sendAsynchronousRequest:request queue:queue completionHandler:nil];
+    }
+}
+
+%end
+
+
+%hook GMOVoiceRecognitionView
+// keep a reference to the latest GMOVoiceRecognitionView so that I can programatically close it
+-(id)initWithFrame:(CGRect)arg1
+{
+    voiceRecognitionView = %orig;
+    return voiceRecognitionView;
+}
+%end
+
+
 %hook GMOVoiceSearchViewController
 
 -(void)ecoutezControllerDidCompleteRecognitionWithResult:(NSString *)result
@@ -132,10 +195,6 @@ static void googiriUpdatePreferences() {
         %orig;
         return;
     }
-
-    NSLog(@"[GOOGIRI] result: %@", result);
-    NSLog(@"[GOOGIRI] defaultHandler: %u", defaultHandler);
-
 
     // FIRST - check for names at the beginning; these override the default handler
 
@@ -154,22 +213,12 @@ static void googiriUpdatePreferences() {
                     case kSiri: {
                         // open the query in siri
                         googiriOpenQueryInSiri();
-                        [[%c(GMOEcoutezController) sharedInstance] cancelRecognition];
+                        [voiceRecognitionView cancelButtonPress:nil];
                         break;
                     }
                     case kWebserver: {
-                        NSLog(@"[GOOGIRI] %@", [NSURL URLWithString:[webserverAddress stringByAppendingString:[result stringByAddingPercentEscapesUsingEncoding: NSASCIIStringEncoding]]]);
-                        // if ((webserverAddress != nil) && ![webserverAddress isEqualToString:@""]) {
-                        //     NSMutableURLRequest *request = [NSMutableURLRequest requestWithURL:[NSURL URLWithString:[webserverAddress stringByAppendingString:[result stringByAddingPercentEscapesUsingEncoding: NSASCIIStringEncoding]]]
-                        //                                                            cachePolicy:NSURLRequestReloadIgnoringLocalCacheData
-                        //                                                        timeoutInterval:10];
-
-                        //     [request setHTTPMethod: @"GET"];
-
-                        //     NSOperationQueue *queue = [[NSOperationQueue alloc] init];
-                        //     [NSURLConnection sendAsynchronousRequest:request queue:queue completionHandler:nil];
-                        // }
-                        [[%c(GMOEcoutezController) sharedInstance] cancelRecognition];
+                        [((GMOSearchApplication *)[%c(GMOSearchApplication) sharedApplication]) googiriSendResult:result toWebserver:webserverAddress];
+                        [voiceRecognitionView cancelButtonPress:nil];
                         break;
                     }
                     case kGoogle:
@@ -177,9 +226,10 @@ static void googiriUpdatePreferences() {
                         %orig;
                         break;
                     }
-                    // if we entered this block, the request was handled, so return
-                    return;
                 }
+
+                // if we entered this block, the request was handled, so return
+                return;
             }
         }
     }
@@ -191,25 +241,12 @@ static void googiriUpdatePreferences() {
     switch (defaultHandler) {
         case kSiri: {
             googiriOpenQueryInSiri();
-            [[%c(GMOEcoutezController) sharedInstance] cancelRecognition];
+            [voiceRecognitionView cancelButtonPress:nil];
             break;
         }
         case kWebserver: {
-            NSLog(@"[GOOGIRI] result: %@", result);
-
-            NSLog(@"[GOOGIRI] %@", [NSURL URLWithString:[webserverAddress stringByAppendingString:[result stringByAddingPercentEscapesUsingEncoding: NSASCIIStringEncoding]]]);
-            // if ((webserverAddress != nil) && ![webserverAddress isEqualToString:@""]) {
-            //     NSMutableURLRequest *request = [NSMutableURLRequest requestWithURL:[NSURL URLWithString:[webserverAddress stringByAppendingString:[result stringByAddingPercentEscapesUsingEncoding: NSASCIIStringEncoding]]]
-            //                                                            cachePolicy:NSURLRequestReloadIgnoringLocalCacheData
-            //                                                        timeoutInterval:10];
-
-            //     [request setHTTPMethod: @"GET"];
-
-            //     NSOperationQueue *queue = [[NSOperationQueue alloc] init];
-            //     [NSURLConnection sendAsynchronousRequest:request queue:queue completionHandler:nil];
-
-            // }
-            [[%c(GMOEcoutezController) sharedInstance] cancelRecognition];
+            [((GMOSearchApplication *)[%c(GMOSearchApplication) sharedApplication]) googiriSendResult:result toWebserver:webserverAddress];
+            [voiceRecognitionView cancelButtonPress:nil];
             break;
         }
         case kGoogle:
