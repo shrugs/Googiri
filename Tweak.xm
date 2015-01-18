@@ -120,11 +120,19 @@ static void googiriUpdatePreferences() {
 
         NSOperationQueue *queue = [[NSOperationQueue alloc] init];
         [NSURLConnection sendAsynchronousRequest:request queue:queue completionHandler:^(NSURLResponse *response, NSData *data, NSError *connectionError) {
+
+            if (connectionError || !data) {
+                dispatch_async(dispatch_get_main_queue(), ^{
+                    SCLAlertView *alert = [[SCLAlertView alloc] init];
+                    [alert showError:rootViewController title:@"Uh oh!" subTitle:@"No connectivity to webserver :(" closeButtonTitle:@"OK" duration:3.0f];
+                });
+                return;
+            }
+
             NSError *error = nil;
             NSDictionary *responseOptions = [NSJSONSerialization JSONObjectWithData:data options:kNilOptions error:&error];
 
             if (error != nil) {
-                // NSLog(@"[GOOGIRI] Error parsing JSON.");
                 return;
             } else {
                 // NSLog(@"[GOOGIRI] Response: %@", responseOptions);

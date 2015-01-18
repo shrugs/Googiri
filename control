@@ -1,9 +1,9 @@
 Package: com.mattcmultimedia.googiri
 Name: Googiri
 Depends: mobilesubstrate(>= 0.9.5015), libactivator(>= 1.9.1), preferenceloader(>= 2.2.2), com.rpetrich.rocketbootstrap(>=1.0.2)
-Version: 2.5.0
+Version: 2.5.1
 Architecture: iphoneos-arm
-Description: route Google Search queries to Siri
+Description: Middleware for Google's Voice Search
 Maintainer: MattCMultimedia
 Author: MattCMultimedia
 Section: Tweaks
