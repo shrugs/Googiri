@@ -6,8 +6,8 @@ include theos/makefiles/common.mk
 # TARGET := iphone:7.0:2.0
 
 TWEAK_NAME = Googiri
-Googiri_FILES = Tweak.xm
-Googiri_FRAMEWORKS = UIKit Foundation
+Googiri_FILES = Tweak.xm SCLAlertView/SCLAlertView/SCLAlertView.m SCLAlertView/SCLAlertView/SCLAlertViewResponder.m SCLAlertView/SCLAlertView/SCLAlertViewStyleKit.m SCLAlertView/SCLAlertView/SCLButton.m
+Googiri_FRAMEWORKS = UIKit Foundation AVFoundation CoreGraphics
 
 include $(THEOS_MAKE_PATH)/tweak.mk
 SUBPROJECTS += googirisiriactivator

@@ -1,61 +1,6 @@
 
-//
-// GMOEcoutezController
-//
-@interface GMOEcoutezController : NSObject
-+(id)sharedInstance;
--(void)cancelRecognition;
-@end
 
-//
-// GMOSearchApplication
-//
-@interface GMOSearchApplication : NSObject
-@property (nonatomic,retain) UIWindow* window;
-+ (id)sharedApplication;
-
-// my added methods
-- (void)googiriSendResult:(NSString *)text toWebserver:(NSString *)webserver;
-@end
-
-//
-// GMOVoiceSearchViewController + GMOEcoutezControllerDelegate
-//
-@protocol GMOEcoutezControllerDelegate
--(void)ecoutezControllerDidCompleteRecognitionWithResult:(id)arg1;
-@end
-@interface GMOVoiceSearchViewController : UIViewController <GMOEcoutezControllerDelegate>
-@end
-
-//
-// GMOVoiceRecognitionView
-//
-@interface GMOVoiceRecognitionView : UIView
-- (void)cancelButtonPress:(id)arg1;
-@end
-
-//
-// CPDistributedMessagingCenter
-//
-@interface CPDistributedMessagingCenter : NSObject
-+ (id)centerNamed:(id)arg1;
-- (BOOL)sendMessageName:(id)arg1 userInfo:(id)arg2;
-@end
-
-//
-// RocketBootstrap
-//
-#import <RocketBootstrap/rocketbootstrap.h>
-
-//
-// Handlers
-//
-typedef enum {
-    kSiri,
-    kGoogle,
-    kWebserver
-} Handler;
-
+#import "Tweak.h"
 
 //
 // STATIC SETTINGS VARIABLES
@@ -71,6 +16,7 @@ static Handler defaultHandler;
 static NSArray *names;
 
 static GMOVoiceRecognitionView *voiceRecognitionView;
+static GMORootViewController *rootViewController;
 
 
 
@@ -153,6 +99,14 @@ static void googiriUpdatePreferences() {
 
 }
 
+%hook GMORootViewController
+- (id)init
+{
+    rootViewController = %orig;
+    return rootViewController;
+}
+%end
+
 
 %hook GMOSearchApplication
 
@@ -190,12 +144,15 @@ static void googiriUpdatePreferences() {
                     // if we got an image or text, show the alert view
                     NSLog(@"[GOOGIRI] Got text: %@", [responseOptions objectForKey:@"text"]);
                     dispatch_async(dispatch_get_main_queue(), ^{
-                        UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"YO!"
-                                                                        message:[responseOptions objectForKey:@"text"]
-                                                                       delegate:nil
-                                                              cancelButtonTitle:@"Neat"
-                                                              otherButtonTitles:nil];
-                        [alert show];
+
+                        SCLAlertView *alert = [[SCLAlertView alloc] init];
+
+                        [alert showTitle:rootViewController
+                                   title:@"Congratulations"
+                                subTitle:@"Operation successfully completed."
+                                   style:Success
+                        closeButtonTitle:@"Done"
+                                duration:0.0f];
                     });
 
                 }

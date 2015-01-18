@@ -1,31 +1,27 @@
-Googiri
+# Googiri
 
-[See the cydia listing.](http://apt.thebigboss.org/onepackage.php?bundleid=com.mattcmultimedia.googiri&db=)
+[On Cydia](http://apt.thebigboss.org/onepackage.php?bundleid=com.mattcmultimedia.googiri&db=)
+
+Googiri is a powerful middleware broker for Google's voice search feature. It allows you to handle searches with Siri, Google, or your own webserver.
+
+The best use case is in home automation; use Googiri to send Google-quality speech-to-text to your automation setup straight from the jailbroken iDevice.
+
+## Features
+
+- Use Siri's first party integration features with Google's speech-to-text
+- Set a default handler (Siri, Google, or a Webserver) to handle normal queries
+- When you want to explicitly handle a query with a certain handler, specify it before the query. i.e. "Jarvis, turn off my thermostat" rather than simply "turn off my thermostat"
+- When using your own webserver, you may return JSON to trigger actions on the iDevice, including access to every installed Activator listener.
+    + Success or Error responses can also be displayed on the device from the webserver
 
 
-Googiri - Use Google's awesome speech-to-text results with Siri.
+## Docs
 
-Speak your query in the Google Search app, and if you prepend your query with a few keywords, Siri will take over handling the query.
+Response JSON (check out the example server) can contain the following fields:
 
-For example, you could ask Google for the weather with "What's the weather", but if you want Siri's results instead, say "hey, Siri, what's the weather".
 
-This works for system functions, of course. Telling Google, "remind me to take out the trash in an hour" will open Siri with your already filled in reminder card.
-
-You can optionally set Siri as the default results engine by toggling "Send All to Siri" in the settings panel. This will send all queries from Google's Search app to Siri, unless you say "Google" (or a similar phrase) before your query.
-
-Finally, if you prepend your query with one of the system commands, Siri will automatically take over, regardless of the setting above.
-
-____
-
-For a full list of phrases that route to Siri or Google, including system commands, see the settings panel.
-I suggest using NowNow to set Google Search as the long press home button action.
-
-By MattCMultimedia, AKA Shrugs
-Hit me up on Twitter: @MattCMultimedia
-Email me if stuff doesn't work: MattCMultimedia@gmail.com
-
-I hope you enjoy Googiri!
-
-Configure options from Settings.
-
-No screen shots for this item.
+| Property | Description |
+| ----- | ------ |
+| text       | **string** - arbitrary text to display to the user |
+| dialogType | **string** - "success", "error", "notice", "warning", "info" |
+| activator  | **string** - the unique name of an activator listener to trigger on the device (see a list of installed listeners by running "activator listeners" via ssh on your device) |
