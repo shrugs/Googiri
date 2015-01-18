@@ -3,7 +3,7 @@
 // GMOEcoutezController
 //
 @interface GMOEcoutezController : NSObject
--(void)setRecognitionResult:(id)arg1;
++(id)sharedInstance;
 -(void)cancelRecognition;
 @end
 
@@ -24,8 +24,15 @@ typedef enum {
     kWebserver
 } Handler;
 
+@protocol GMOEcoutezControllerDelegate
+-(void)ecoutezControllerDidCompleteRecognitionWithResult:(id)arg1;
+@end
+@interface GMOVoiceSearchViewController : UIViewController <GMOEcoutezControllerDelegate>
 
-static NSString *latestQuery = @"test";
+@end
+
+
+static NSString *latestQuery;
 static BOOL globalEnable = YES;
 // addr
 static NSMutableString *webserverAddress;
@@ -116,9 +123,9 @@ static void googiriUpdatePreferences() {
 }
 
 
-%hook GMOEcoutezController
+%hook GMOVoiceSearchViewController
 
--(void)setRecognitionResult:(NSString *)result
+-(void)ecoutezControllerDidCompleteRecognitionWithResult:(NSString *)result
 {
 
     if (!globalEnable || !result) {
@@ -127,7 +134,6 @@ static void googiriUpdatePreferences() {
     }
 
     NSLog(@"[GOOGIRI] result: %@", result);
-    NSLog(@"[GOOGIRI] %@", names);
     NSLog(@"[GOOGIRI] defaultHandler: %u", defaultHandler);
 
 
@@ -142,14 +148,13 @@ static void googiriUpdatePreferences() {
             if ([result rangeOfString:[[names objectAtIndex:handler] objectAtIndex:n]].location == 0) {
                 // remove the name from the result string
                 result = [result stringByReplacingOccurrencesOfString:[[names objectAtIndex:handler] objectAtIndex:n] withString:@""];
-                latestQuery = result;
+                latestQuery = [result copy];
 
                 switch (handler) {
                     case kSiri: {
                         // open the query in siri
-                        latestQuery = result;
                         googiriOpenQueryInSiri();
-                        [self cancelRecognition];
+                        [[%c(GMOEcoutezController) sharedInstance] cancelRecognition];
                         break;
                     }
                     case kWebserver: {
@@ -164,7 +169,7 @@ static void googiriUpdatePreferences() {
                         //     NSOperationQueue *queue = [[NSOperationQueue alloc] init];
                         //     [NSURLConnection sendAsynchronousRequest:request queue:queue completionHandler:nil];
                         // }
-                        [self cancelRecognition];
+                        [[%c(GMOEcoutezController) sharedInstance] cancelRecognition];
                         break;
                     }
                     case kGoogle:
@@ -181,16 +186,17 @@ static void googiriUpdatePreferences() {
 
     // SECOND - nothing special, use default
 
-    latestQuery = result;
+    latestQuery = [result copy];
 
     switch (defaultHandler) {
         case kSiri: {
-            latestQuery = result;
             googiriOpenQueryInSiri();
-            [self cancelRecognition];
+            [[%c(GMOEcoutezController) sharedInstance] cancelRecognition];
             break;
         }
         case kWebserver: {
+            NSLog(@"[GOOGIRI] result: %@", result);
+
             NSLog(@"[GOOGIRI] %@", [NSURL URLWithString:[webserverAddress stringByAppendingString:[result stringByAddingPercentEscapesUsingEncoding: NSASCIIStringEncoding]]]);
             // if ((webserverAddress != nil) && ![webserverAddress isEqualToString:@""]) {
             //     NSMutableURLRequest *request = [NSMutableURLRequest requestWithURL:[NSURL URLWithString:[webserverAddress stringByAppendingString:[result stringByAddingPercentEscapesUsingEncoding: NSASCIIStringEncoding]]]
@@ -203,7 +209,7 @@ static void googiriUpdatePreferences() {
             //     [NSURLConnection sendAsynchronousRequest:request queue:queue completionHandler:nil];
 
             // }
-            [self cancelRecognition];
+            [[%c(GMOEcoutezController) sharedInstance] cancelRecognition];
             break;
         }
         case kGoogle:
