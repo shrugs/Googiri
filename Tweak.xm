@@ -14,6 +14,7 @@ static NSArray *names;
 // things I need references to at some point
 static GMOVoiceRecognitionView *voiceRecognitionView;
 static GMORootViewController *rootViewController;
+static GMOHomePageController *homePageController;
 
 
 #define PrefPath @"/var/mobile/Library/Preferences/com.mattcmultimedia.googirisettings.plist"
@@ -94,22 +95,12 @@ static void googiriUpdatePreferences() {
 
 }
 
-
-%hook GMORootViewController
-// keep reference to GMORootViewController
-- (id)init
-{
-    rootViewController = %orig;
-    return rootViewController;
-}
-%end
-
 %hook GMOSearchApplication
 
 %new
 - (void)googiriSendResult:(NSString *)text toWebserver:(NSString *)webserver
 {
-    NSLog(@"[GOOGIRI] googiriSendResult: %@ toWebserver: %@", text, webserver);
+    // NSLog(@"[GOOGIRI] googiriSendResult: %@ toWebserver: %@", text, webserver);
 
     if ((webserver != nil) && ![webserver isEqualToString:@""]) {
         NSMutableURLRequest *request = [NSMutableURLRequest requestWithURL:[NSURL URLWithString:[webserver stringByAppendingString:[text stringByAddingPercentEscapesUsingEncoding: NSASCIIStringEncoding]]]
@@ -144,7 +135,8 @@ static void googiriUpdatePreferences() {
                     [messagingCenter sendMessageName:@"googiriActivateActivatorWithListener" userInfo:[NSDictionary dictionaryWithObjectsAndKeys:
                                                                                                                   [responseOptions objectForKey:@"activator"], @"listener",
                                                                                                                   nil]];
-                } else if ([responseOptions objectForKey:@"text"]) {
+                }
+                if ([responseOptions objectForKey:@"text"]) {
                     // otherwise if we got text, show the alert view
                     dispatch_async(dispatch_get_main_queue(), ^{
 
@@ -181,6 +173,17 @@ static void googiriUpdatePreferences() {
 
                 }
 
+                dispatch_async(dispatch_get_main_queue(), ^{
+                    [voiceRecognitionView cancelButtonPress:nil];
+
+                    if ([responseOptions objectForKey:@"reListen"]  && [[responseOptions objectForKey:@"reListen"] boolValue]) {
+                        // reactivate listening
+                        dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 0.1 * NSEC_PER_SEC), dispatch_get_main_queue(), ^{
+                            [homePageController voiceButtonPressed];
+                        });
+                    }
+                });
+
             }
         }];
     }
@@ -188,6 +191,14 @@ static void googiriUpdatePreferences() {
 
 %end
 
+%hook GMORootViewController
+// keep reference to GMORootViewController
+- (id)init
+{
+    rootViewController = %orig;
+    return rootViewController;
+}
+%end
 
 %hook GMOVoiceRecognitionView
 // keep a reference to the latest GMOVoiceRecognitionView so that I can programatically close it
@@ -195,6 +206,15 @@ static void googiriUpdatePreferences() {
 {
     voiceRecognitionView = %orig;
     return voiceRecognitionView;
+}
+%end
+
+%hook GMOHomePageController
+// keep a reference to the latest GMOHomePageController
+-(id)initWithNibName:(id)arg1 bundle:(id)arg2
+{
+    homePageController = %orig;
+    return homePageController;
 }
 %end
 
@@ -231,7 +251,6 @@ static void googiriUpdatePreferences() {
                     }
                     case kWebserver: {
                         [((GMOSearchApplication *)[%c(GMOSearchApplication) sharedApplication]) googiriSendResult:result toWebserver:webserverAddress];
-                        [voiceRecognitionView cancelButtonPress:nil];
                         break;
                     }
                     case kGoogle:
@@ -259,7 +278,6 @@ static void googiriUpdatePreferences() {
         }
         case kWebserver: {
             [((GMOSearchApplication *)[%c(GMOSearchApplication) sharedApplication]) googiriSendResult:result toWebserver:webserverAddress];
-            [voiceRecognitionView cancelButtonPress:nil];
             break;
         }
         case kGoogle:

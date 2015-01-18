@@ -10,11 +10,12 @@ app.get('/', function (req, res) {
 
     res.json({
         // 'title': 'Oh boy!',
-        'text': req.query.q,
-        'style': styles[i++],
+        // 'text': req.query.q,
+        // 'style': styles[i++],
         // 'activator': 'libactivator.system.homebutton',
         // 'doneText': 'A button!',
         // 'duration': 3.0,
+        'reListen': true
     });
 
     if (i > styles.length) {

@@ -35,6 +35,12 @@
 @end
 
 //
+// GMOHomePageController
+//
+@interface GMOHomePageController : UIViewController
+- (void)voiceButtonPressed;
+@end
+//
 // GMORootViewController
 //
 @interface GMORootViewController : UIViewController
