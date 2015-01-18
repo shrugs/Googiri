@@ -28,3 +28,4 @@ Response JSON (check out the example server) can contain the following fields:
 | activator  | **string** | the unique name of an activator listener to trigger on the device (see a list of installed listeners by running "activator listeners" via ssh on your device) | None |
 | doneText | **string** | alert view done button text | "Done!" |
 | duration | **float** | duration alert view stays on screen. 0.0f is forever | 0.0f |
+| reListen | **bool** | tell Googiri to listen for more commands after this query | false |
