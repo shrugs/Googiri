@@ -1,10 +1,22 @@
 
 
-#import <iOS/iOS7/PrivateFrameworks/AppSupport/CPDistributedMessagingCenter.h>
+// #import <iOS/iOS7/PrivateFrameworks/AppSupport/CPDistributedMessagingCenter.h>
 #import <iOS/iOS7/SpringBoard/SBAssistantController.h>
-#import <iOS/iOS7/PrivateFrameworks/AssistantServices/AFConnection.h>
+// #import <iOS/iOS7/PrivateFrameworks/AssistantServices/AFConnection.h>
 #import <libactivator/LAActivator.h>
 #import <libactivator/LAEvent.h>
+
+@interface CPDistributedMessagingCenter : NSObject
++ (id)centerNamed:(id)arg1;
+- (void)runServerOnCurrentThread;
+- (void)registerForMessageName:(id)arg1 target:(id)arg2 selector:(SEL)arg3;
+@end
+
+
+@interface AFConnection : NSObject
+- (void)startRequestWithCorrectedText:(id)arg1 forSpeechIdentifier:(id)arg2;
+@end
+
 
 #import <RocketBootstrap/rocketbootstrap.h>
 
@@ -21,10 +33,6 @@ static AFConnection *latestConnection = nil;
 
 - (NSDictionary *)handleMessageNamed:(NSString *)name withUserInfo:(NSDictionary *)userinfo {
     if (![[userinfo objectForKey:@"query"] isEqualToString:@""] )
-
-        // if ([[userinfo objectForKey:@"switchBack"] boolValue]) {
-        //     [[LAActivator sharedInstance] sendEvent:[LAEvent eventWithName:@"tevs"] toListenerWithName:@"jp.ashikase.lastapp"];
-        // }
 
         // activate Siri here
         [[LAActivator sharedInstance] sendEvent:[LAEvent eventWithName:@"blah"] toListenerWithName: @"libactivator.system.virtual-assistant"];
@@ -48,10 +56,8 @@ static AFConnection *latestConnection = nil;
     rocketbootstrap_distributedmessagingcenter_apply(messagingCenter);
     [messagingCenter runServerOnCurrentThread];
 
-
     // Register Messages
     [messagingCenter registerForMessageName:@"googiriActivateSiriWithQuery" target:googiriData selector:@selector(handleMessageNamed:withUserInfo:)];
-    // NSLog(@"CREATED MESSAGING CENTER AND APPLIED ROCKET BOOTSTRAP");
 
     return %orig;
 }
@@ -65,7 +71,7 @@ static AFConnection *latestConnection = nil;
 
 - (id)init {
     latestConnection = %orig;
-    return %orig;
+    return latestConnection;
 }
 
 %end

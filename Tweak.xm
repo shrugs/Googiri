@@ -1,76 +1,37 @@
 
-
-
+//
+// GMOEcoutezController
+//
 @interface GMOEcoutezController : NSObject
 -(void)setRecognitionResult:(id)arg1;
 -(void)cancelRecognition;
 @end
 
-#import <iOS/iOS7/PrivateFrameworks/AppSupport/CPDistributedMessagingCenter.h>
+//
+// CPDistributedMessagingCenter
+//
+@interface CPDistributedMessagingCenter : NSObject
++ (id)centerNamed:(id)arg1;
+- (BOOL)sendMessageName:(id)arg1 userInfo:(id)arg2;
+@end
+
+// RocketBootstrap
 #import <RocketBootstrap/rocketbootstrap.h>
 
-static NSNumber *kSiri = [NSNumber numberWithInteger: 0];
-static NSNumber *kGoogle = [NSNumber numberWithInteger: 1];
-static NSNumber *kWebserver = [NSNumber numberWithInteger: 2];
+typedef enum {
+    kSiri,
+    kGoogle,
+    kWebserver
+} Handler;
 
 
-static NSMutableArray *intelligentRoutingCommands = [[NSMutableArray alloc] initWithObjects:@"remind me ",
-                                                                                @"set a reminder ",
-                                                                                @"open ",
-                                                                                @"wake me up ",
-                                                                                @"set an alarm ",
-                                                                                @"set a timer ",
-                                                                                @"email ",
-                                                                                @"check email",
-                                                                                @"check my email",
-                                                                                @"text ",
-                                                                                @"tell ",
-                                                                                @"ask ",
-                                                                                @"new text",
-                                                                                @"send a message ",
-                                                                                @"send a text ",
-                                                                                @"read my ",
-                                                                                @"play ",
-                                                                                @"note",
-                                                                                @"call ",
-                                                                                @"FaceTime ",
-                                                                                @"face time ",
-                                                                                @"post on Facebook ",
-                                                                                @"post on face book ",
-                                                                                @"post on Twitter ",
-                                                                                @"post on twitter ",
-                                                                                @"tweet",
-                                                                                @"what's the weather in ",
-                                                                                @"how cold will ",
-                                                                                @"will it rain ",
-                                                                                @"what's the chance of ",
-                                                                                @"how cold is it",
-                                                                                @"is it warm ",
-                                                                                @"is it hot ",
-                                                                                @"is it cold ",
-                                                                                @"weather",
-                                                                                @"what's the weather",
-                                                                                @"give me directions to ",
-                                                                                @"get me directons to ",
-                                                                                @"find directions for ",
-                                                                                @"directions for ",
-                                                                                @"directions to ",
-                                                                                @"drive me ",
-                                                                                @"get directions to ",
-                                                                                @"get directions for ",
-                                                                                @"navigate to ",
-                                                                                @"navigate me to ",
-                                                                                nil];
-//TODO: look at how Google parses the returned data
 static NSString *latestQuery = @"test";
 static BOOL globalEnable = YES;
-static BOOL switchBack = YES;
 // addr
 static NSMutableString *webserverAddress;
 // default handler for queries
-static NSNumber *defaultHandler;
+static Handler defaultHandler;
 // whether or not Googiri should route obvious system commands to Siri sans the 'Siri' keyword
-static BOOL intelligentRouting = YES;
 static NSArray *names;
 
 
@@ -84,7 +45,6 @@ static void googiriOpenQueryInSiri() {
     rocketbootstrap_distributedmessagingcenter_apply(messagingCenter);
     [messagingCenter sendMessageName:@"googiriActivateSiriWithQuery" userInfo:[NSDictionary dictionaryWithObjectsAndKeys:
                                                                                             latestQuery, @"query",
-                                                                                            [NSNumber numberWithBool:switchBack], @"switchBack",
                                                                                         nil]];
 
 }
@@ -95,7 +55,6 @@ static void googiriUpdatePreferences() {
         //options for settings
         globalEnable = YES;
         defaultHandler = kGoogle;
-        intelligentRouting = YES;
         webserverAddress = nil;
 
     } else {
@@ -104,18 +63,31 @@ static void googiriUpdatePreferences() {
         temp = [prefs valueForKey:@"globalEnable"];
         globalEnable = temp ? [temp boolValue] : YES;
 
-        temp = [prefs valueForKey:@"switchBack"];
-        switchBack = temp ? [temp boolValue] : YES;
-
         temp = [prefs valueForKey:@"defaultHandler"];
-        defaultHandler = temp ? [NSNumber numberWithInteger:[temp intValue]] : kGoogle;
-
-        temp = [prefs valueForKey:@"intelligentRouting"];
-        intelligentRouting = temp ? [temp boolValue] : YES;
+        if (temp) {
+            switch ([temp intValue]) {
+                case 0: {
+                    defaultHandler = kSiri;
+                    break;
+                }
+                case 2: {
+                    defaultHandler = kWebserver;
+                    break;
+                }
+                case 1:
+                default: {
+                    defaultHandler = kGoogle;
+                    break;
+                }
+            }
+        } else {
+            defaultHandler = kGoogle;
+        }
 
         temp = [prefs valueForKey:@"webserverAddress"];
         webserverAddress = temp ? [(NSString *)temp mutableCopy] : nil;
 
+        // create the array of names for each handler
         NSMutableString *tempStr;
         for (int h = 0; h < 3; ++h)
         {
@@ -130,12 +102,12 @@ static void googiriUpdatePreferences() {
                 justNamesArray = [justNamesArray filteredArrayUsingPredicate:[NSPredicate predicateWithFormat:@"SELF != ''"]];
                 for (unsigned int i = 0; i < [justNamesArray count]; ++i)
                 {
-                    if (![names[h] containsObject:[[justNamesArray objectAtIndex:i] stringByAppendingString:@" "]]) {
+                    NSString *newEntry = [[justNamesArray objectAtIndex:i] stringByAppendingString:@" "];
+                    if (![names[h] containsObject:newEntry]) {
                         // add a space because string parsing
-                        [names[h] addObject:[[justNamesArray objectAtIndex:i] stringByAppendingString:@" "]];
+                        [names[h] addObject:newEntry];
                     }
                 }
-                // [justNamesArray release];
             }
         }
 
@@ -154,89 +126,93 @@ static void googiriUpdatePreferences() {
         return;
     }
 
-    // NSLog(@"%@", defaultHandler);
+    NSLog(@"[GOOGIRI] result: %@", result);
+    NSLog(@"[GOOGIRI] %@", names);
+    NSLog(@"[GOOGIRI] defaultHandler: %u", defaultHandler);
 
-    // we want to use the defaultHandler to handle the event, unless it should be
-    // -> overridden by another handler's name or intelligentRouting
 
-    NSArray *otherHandlers = [[NSArray alloc] initWithObjects:kSiri, kGoogle, kWebserver, nil];
+    // FIRST - check for names at the beginning; these override the default handler
 
-    for (int i = 0; i < [otherHandlers count]; ++i)
+    for (int handler = kSiri; handler <= kWebserver; handler++)
     {
         // for each other handler, check for names in the query
-        // if the name exists, yay, route and be done with it
-        for (int n = 0; n < [[names objectAtIndex:[[otherHandlers objectAtIndex:i] intValue]] count]; ++n)
+        for (int n = 0; n < [[names objectAtIndex:handler] count]; ++n)
         {
-            if ([result rangeOfString:[[names objectAtIndex:[[otherHandlers objectAtIndex:i] intValue]] objectAtIndex:n]].location == 0) {
-                result = [result stringByReplacingOccurrencesOfString:[[names objectAtIndex:[[otherHandlers objectAtIndex:i] intValue]] objectAtIndex:n] withString:@""];
-
-                if ([[otherHandlers objectAtIndex:i] intValue] == [kSiri intValue]) {
-                    latestQuery = result;
-                    googiriOpenQueryInSiri();
-                    [self cancelRecognition];
-                } else if ([[otherHandlers objectAtIndex:i] intValue] == [kGoogle intValue]) {
-                    %orig;
-                } else if ([[otherHandlers objectAtIndex:i] intValue] == [kWebserver intValue]) {
-                    // is webserver
-                    // post stuff
-                    // NSLog(@"WOULD POST %@", [webserverAddress stringByAddingPercentEscapesUsingEncoding: NSASCIIStringEncoding]);
-                    if ((webserverAddress != nil) && ![webserverAddress isEqualToString:@""]) {
-                        NSMutableURLRequest *request = [NSMutableURLRequest requestWithURL:[NSURL URLWithString:[webserverAddress stringByAppendingString:[result stringByAddingPercentEscapesUsingEncoding: NSASCIIStringEncoding]]]
-                                                                               cachePolicy:NSURLRequestReloadIgnoringLocalAndRemoteCacheData
-                                                                           timeoutInterval:10];
-
-                        [request setHTTPMethod: @"GET"];
-
-                        NSOperationQueue *queue = [[NSOperationQueue alloc] init];
-                        [NSURLConnection sendAsynchronousRequest:request queue:queue completionHandler:nil];
-                    }
-                    [self cancelRecognition];
-                }
-                return;
-            }
-        }
-    }
-
-    // if handler is google or webserver, check for system commands
-    if (intelligentRouting && (([defaultHandler intValue] == [kGoogle intValue]) || ([defaultHandler intValue] == [kWebserver intValue]))) {
-        for (int i = 0; i < [intelligentRoutingCommands count]; ++i)
-        {
-            if ([result rangeOfString:[intelligentRoutingCommands objectAtIndex:i]].location == 0) {
-                // yay, route to siri
+            // if the name is at the beginning of the result string
+            if ([result rangeOfString:[[names objectAtIndex:handler] objectAtIndex:n]].location == 0) {
+                // remove the name from the result string
+                result = [result stringByReplacingOccurrencesOfString:[[names objectAtIndex:handler] objectAtIndex:n] withString:@""];
                 latestQuery = result;
-                googiriOpenQueryInSiri();
-                [self cancelRecognition];
-                return;
+
+                switch (handler) {
+                    case kSiri: {
+                        // open the query in siri
+                        latestQuery = result;
+                        googiriOpenQueryInSiri();
+                        [self cancelRecognition];
+                        break;
+                    }
+                    case kWebserver: {
+                        NSLog(@"[GOOGIRI] %@", [NSURL URLWithString:[webserverAddress stringByAppendingString:[result stringByAddingPercentEscapesUsingEncoding: NSASCIIStringEncoding]]]);
+                        // if ((webserverAddress != nil) && ![webserverAddress isEqualToString:@""]) {
+                        //     NSMutableURLRequest *request = [NSMutableURLRequest requestWithURL:[NSURL URLWithString:[webserverAddress stringByAppendingString:[result stringByAddingPercentEscapesUsingEncoding: NSASCIIStringEncoding]]]
+                        //                                                            cachePolicy:NSURLRequestReloadIgnoringLocalCacheData
+                        //                                                        timeoutInterval:10];
+
+                        //     [request setHTTPMethod: @"GET"];
+
+                        //     NSOperationQueue *queue = [[NSOperationQueue alloc] init];
+                        //     [NSURLConnection sendAsynchronousRequest:request queue:queue completionHandler:nil];
+                        // }
+                        [self cancelRecognition];
+                        break;
+                    }
+                    case kGoogle:
+                    default: {
+                        %orig;
+                        break;
+                    }
+                    // if we entered this block, the request was handled, so return
+                    return;
+                }
             }
         }
     }
 
-    // nothing special, use default
-    if ([defaultHandler intValue] == [kSiri intValue]) {
-        // NSLog(@"FOUND NORMAL SIRI QUERY");
-        // NSLog(@"%i", [defaultHandler intValue]);
-        latestQuery = result;
-        googiriOpenQueryInSiri();
-        [self cancelRecognition];
-    } else if ([defaultHandler intValue] == [kGoogle intValue]) {
-        // NSLog(@"FOUND NORMAL GOOGLE QUERY");
-        %orig;
-    } else if ([defaultHandler intValue] == [kWebserver intValue]) {
-        // is webserver
-        // post stuff
-        if ((webserverAddress != nil) && ![webserverAddress isEqualToString:@""]) {
-            NSMutableURLRequest *request = [NSMutableURLRequest requestWithURL:[NSURL URLWithString:[webserverAddress stringByAppendingString:[result stringByAddingPercentEscapesUsingEncoding: NSASCIIStringEncoding]]]
-                                                                   cachePolicy:NSURLRequestReloadIgnoringLocalAndRemoteCacheData
-                                                               timeoutInterval:10];
+    // SECOND - nothing special, use default
 
-            [request setHTTPMethod: @"GET"];
+    latestQuery = result;
 
-            NSOperationQueue *queue = [[NSOperationQueue alloc] init];
-            [NSURLConnection sendAsynchronousRequest:request queue:queue completionHandler:nil];
-
+    switch (defaultHandler) {
+        case kSiri: {
+            latestQuery = result;
+            googiriOpenQueryInSiri();
+            [self cancelRecognition];
+            break;
         }
-        [self cancelRecognition];
+        case kWebserver: {
+            NSLog(@"[GOOGIRI] %@", [NSURL URLWithString:[webserverAddress stringByAppendingString:[result stringByAddingPercentEscapesUsingEncoding: NSASCIIStringEncoding]]]);
+            // if ((webserverAddress != nil) && ![webserverAddress isEqualToString:@""]) {
+            //     NSMutableURLRequest *request = [NSMutableURLRequest requestWithURL:[NSURL URLWithString:[webserverAddress stringByAppendingString:[result stringByAddingPercentEscapesUsingEncoding: NSASCIIStringEncoding]]]
+            //                                                            cachePolicy:NSURLRequestReloadIgnoringLocalCacheData
+            //                                                        timeoutInterval:10];
+
+            //     [request setHTTPMethod: @"GET"];
+
+            //     NSOperationQueue *queue = [[NSOperationQueue alloc] init];
+            //     [NSURLConnection sendAsynchronousRequest:request queue:queue completionHandler:nil];
+
+            // }
+            [self cancelRecognition];
+            break;
+        }
+        case kGoogle:
+        default: {
+            %orig;
+            break;
+        }
     }
+
     return;
 }
 
@@ -257,6 +233,7 @@ static void reloadPrefsNotification(CFNotificationCenterRef center,
     NSAutoreleasePool *pool = [[NSAutoreleasePool alloc] init];
     %init;
 
+    // I would use shorthand but these need to be mutable inner arrays
     names = [[NSMutableArray alloc] initWithObjects:
            [[NSMutableArray alloc] initWithObjects:@"Siri ",
                                                    @"hey Siri ",

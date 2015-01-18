@@ -113,32 +113,6 @@
             <string>com.mattcmultimedia.googirisettings/reload</string>
         </dict>
 
-        <!-- Intelligent Routing -->
-		<dict>
-			<key>cell</key>
-			<string>PSGroupCell</string>
-			<key>label</key>
-			<string>Intelligent Routing</string>
-			<key>footerText</key>
-			<string>When the query is a system command it will be handled by Siri, regardless of the default handler.</string>
-		</dict>
-		<dict>
-		    <key>cell</key>
-		    <string>PSSwitchCell</string>
-		    <key>default</key>
-		    <true/>
-		    <key>defaults</key>
-		    <string>com.mattcmultimedia.googirisettings</string>
-		    <key>key</key>
-		    <string>intelligentRouting</string>
-		    <key>label</key>
-		    <string>Intelligent Routing</string>
-		    <key>postNotification</key>
-		    <string>com.mattcmultimedia.googirisettings/reload</string>
-		    <key>icon</key>
-		    <string>altGoogiri.png</string>
-		</dict>
-
         <!-- EXTRA -->
         <dict>
             <key>cell</key>
