@@ -16,8 +16,9 @@
 
 // my added methods
 - (void)googiriSendResult:(NSString *)text withContext:(NSString *)ctx toWebserver:(NSString *)webserver;
-- (NSString*)addQueryStringToUrlString:(NSString *)urlString withDictionary:(NSDictionary *)dictionary;
-- (NSString*)urlEscapeString:(NSString *)unencodedString;
+- (NSString*)googiri_addQueryStringToUrlString:(NSString *)urlString withDictionary:(NSDictionary *)dictionary;
+- (NSString*)googiri_urlEscapeString:(NSString *)unencodedString;
+- (void)googiri_setContext:(NSString *)ctx;
 @end
 
 //

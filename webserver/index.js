@@ -12,12 +12,12 @@ app.get('/', function (req, res) {
     console.log(req.query.q, req.query.context);
 
     res.json({
-        'title': 'Oh boy!',
-        'text': req.query.q,
+        // 'title': 'Oh boy!',
+        // 'text': req.query.q,
         // 'style': styles[i++],
         // 'activator': 'libactivator.system.homebutton',
         // 'doneText': 'A button!',
-        'duration': 3.0,
+        // 'duration': 3.0,
         'reListen': true,
         'context': uniqueKey
     });
