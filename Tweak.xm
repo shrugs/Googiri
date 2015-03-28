@@ -114,6 +114,7 @@ static void googiriUpdatePreferences() {
 
             if (connectionError || !data) {
                 dispatch_async(dispatch_get_main_queue(), ^{
+                    [voiceRecognitionView cancelButtonPress:nil];
                     SCLAlertView *alert = [[SCLAlertView alloc] init];
                     [alert showError:rootViewController title:@"Uh oh!" subTitle:@"No connectivity to webserver :(" closeButtonTitle:@"OK" duration:3.0f];
                 });
@@ -124,6 +125,9 @@ static void googiriUpdatePreferences() {
             NSDictionary *responseOptions = [NSJSONSerialization JSONObjectWithData:data options:kNilOptions error:&error];
 
             if (error != nil) {
+                dispatch_async(dispatch_get_main_queue(), ^{
+                    [voiceRecognitionView cancelButtonPress:nil];
+                });
                 return;
             } else {
                 // NSLog(@"[GOOGIRI] Response: %@", responseOptions);
