@@ -16,6 +16,8 @@ static GMOVoiceRecognitionView *voiceRecognitionView;
 static GMORootViewController *rootViewController;
 static GMOHomePageController *homePageController;
 
+static NSString *context = @"default";
+
 
 #define PrefPath @"/var/mobile/Library/Preferences/com.mattcmultimedia.googirisettings.plist"
 
@@ -98,18 +100,49 @@ static void googiriUpdatePreferences() {
 %hook GMOSearchApplication
 
 %new
-- (void)googiriSendResult:(NSString *)text toWebserver:(NSString *)webserver
+- (NSString*)urlEscapeString:(NSString *)unencodedString
 {
-    // NSLog(@"[GOOGIRI] googiriSendResult: %@ toWebserver: %@", text, webserver);
+    return [unencodedString stringByAddingPercentEscapesUsingEncoding:NSASCIIStringEncoding];
+}
+
+%new
+- (NSString*)addQueryStringToUrlString:(NSString *)urlString withDictionary:(NSDictionary *)dictionary
+{
+    NSMutableString *urlWithQuerystring = [[NSMutableString alloc] initWithString:urlString];
+
+    for (id key in dictionary) {
+        NSString *keyString = [key description];
+        NSString *valueString = [[dictionary objectForKey:key] description];
+
+        if ([urlWithQuerystring rangeOfString:@"?"].location == NSNotFound) {
+            [urlWithQuerystring appendFormat:@"?%@=%@", [self urlEscapeString:keyString], [self urlEscapeString:valueString]];
+        } else {
+            [urlWithQuerystring appendFormat:@"&%@=%@", [self urlEscapeString:keyString], [self urlEscapeString:valueString]];
+        }
+    }
+    return urlWithQuerystring;
+}
+
+%new
+- (void)googiriSendResult:(NSString *)text withContext:(NSString *)ctx toWebserver:(NSString *)webserver
+{
 
     if ((webserver != nil) && ![webserver isEqualToString:@""]) {
-        NSMutableURLRequest *request = [NSMutableURLRequest requestWithURL:[NSURL URLWithString:[webserver stringByAppendingString:[text stringByAddingPercentEscapesUsingEncoding: NSASCIIStringEncoding]]]
+
+        NSDictionary *params = @{
+          @"q": text,
+          @"context": context
+        };
+
+
+        NSMutableURLRequest *request = [NSMutableURLRequest requestWithURL:[NSURL URLWithString:[self addQueryStringToUrlString:webserver withDictionary:params]]
                                                                cachePolicy:NSURLRequestReloadIgnoringLocalCacheData
                                                            timeoutInterval:10];
 
         [request setHTTPMethod: @"GET"];
 
-        NSOperationQueue *queue = [[NSOperationQueue alloc] init];
+        NSOperationQueue *queue = [NSOperationQueue mainQueue];
+
         [NSURLConnection sendAsynchronousRequest:request queue:queue completionHandler:^(NSURLResponse *response, NSData *data, NSError *connectionError) {
 
             if (connectionError || !data) {
@@ -182,6 +215,7 @@ static void googiriUpdatePreferences() {
 
                     if ([responseOptions objectForKey:@"reListen"]  && [[responseOptions objectForKey:@"reListen"] boolValue]) {
                         // reactivate listening
+                        context = [responseOptions objectForKey:@"context"] ?: context;
                         dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 0.1 * NSEC_PER_SEC), dispatch_get_main_queue(), ^{
                             [homePageController voiceButtonPressed];
                         });
@@ -254,7 +288,7 @@ static void googiriUpdatePreferences() {
                         break;
                     }
                     case kWebserver: {
-                        [((GMOSearchApplication *)[%c(GMOSearchApplication) sharedApplication]) googiriSendResult:result toWebserver:webserverAddress];
+                        [((GMOSearchApplication *)[%c(GMOSearchApplication) sharedApplication]) googiriSendResult:result withContext:context toWebserver:webserverAddress];
                         break;
                     }
                     case kGoogle:
@@ -281,7 +315,7 @@ static void googiriUpdatePreferences() {
             break;
         }
         case kWebserver: {
-            [((GMOSearchApplication *)[%c(GMOSearchApplication) sharedApplication]) googiriSendResult:result toWebserver:webserverAddress];
+            [((GMOSearchApplication *)[%c(GMOSearchApplication) sharedApplication]) googiriSendResult:result withContext:context toWebserver:webserverAddress];
             break;
         }
         case kGoogle:

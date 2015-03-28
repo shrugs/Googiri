@@ -15,7 +15,9 @@
 + (id)sharedApplication;
 
 // my added methods
-- (void)googiriSendResult:(NSString *)text toWebserver:(NSString *)webserver;
+- (void)googiriSendResult:(NSString *)text withContext:(NSString *)ctx toWebserver:(NSString *)webserver;
+- (NSString*)addQueryStringToUrlString:(NSString *)urlString withDictionary:(NSDictionary *)dictionary;
+- (NSString*)urlEscapeString:(NSString *)unencodedString;
 @end
 
 //

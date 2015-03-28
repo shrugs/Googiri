@@ -96,7 +96,7 @@
             <string>Webserver Address</string>
             <key>footerText</key>
             <string>Add a webserver address for handling the query with your own logic.
-'http://example.com/endpoint?q='</string>
+'http://example.com/endpoint'</string>
         </dict>
         <dict>
             <key>cell</key>
