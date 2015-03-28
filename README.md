@@ -29,3 +29,4 @@ Response JSON (check out the example server) can contain the following fields:
 | doneText | **string** | alert view done button text | "Done!" |
 | duration | **float** | duration alert view stays on screen. 0.0f is forever | 0.0f |
 | reListen | **bool** | tell Googiri to listen for more commands after this query | false |
+| context | **string** | give Googiri a context string that will allow you to maintain a context on your server for subsequen requests. It will be sent with every request in the query params | "default"
