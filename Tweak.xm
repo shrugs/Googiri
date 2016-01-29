@@ -25,9 +25,9 @@ static NSString *context = @"default";
 static void googiriOpenQueryInSiri() {
     CPDistributedMessagingCenter *messagingCenter = [%c(CPDistributedMessagingCenter) centerNamed:@"com.mattcmultimedia.googirisiriactivator"];
     rocketbootstrap_distributedmessagingcenter_apply(messagingCenter);
-    [messagingCenter sendMessageName:@"googiriActivateSiriWithQuery" userInfo:[NSDictionary dictionaryWithObjectsAndKeys:
-                                                                                            latestQuery, @"query",
-                                                                                        nil]];
+    [messagingCenter
+      sendMessageName:@"googiriActivateSiriWithQuery"
+      userInfo:[NSDictionary dictionaryWithObjectsAndKeys: latestQuery, @"query", nil]];
 
 }
 
@@ -176,9 +176,9 @@ static void googiriUpdatePreferences() {
                 if ([responseOptions objectForKey:@"activator"]) {
                     CPDistributedMessagingCenter *messagingCenter = [%c(CPDistributedMessagingCenter) centerNamed:@"com.mattcmultimedia.googirisiriactivator"];
                     rocketbootstrap_distributedmessagingcenter_apply(messagingCenter);
-                    [messagingCenter sendMessageName:@"googiriActivateActivatorWithListener" userInfo:[NSDictionary dictionaryWithObjectsAndKeys:
-                                                                                                                  [responseOptions objectForKey:@"activator"], @"listener",
-                                                                                                                  nil]];
+                    [messagingCenter
+                      sendMessageName:@"googiriActivateActivatorWithListener"
+                      userInfo:[NSDictionary dictionaryWithObjectsAndKeys: [responseOptions objectForKey:@"activator"], @"listener", nil]];
                 }
                 if ([responseOptions objectForKey:@"text"]) {
                     // otherwise if we got text, show the alert view
@@ -206,7 +206,7 @@ static void googiriUpdatePreferences() {
                     }
 
                     SCLAlertView *alert = [[SCLAlertView alloc] init];
-                    [alert showTitle:rootViewController
+                    [alert showTitle:nil
                                title:[responseOptions objectForKey:@"title"] ? [responseOptions objectForKey:@"title"] : defaultTitle
                             subTitle:[responseOptions objectForKey:@"text"]
                                style:alertStyle

@@ -38,14 +38,14 @@ static AFConnection *latestConnection = nil;
 
     if ([name isEqualToString:@"googiriActivateSiriWithQuery"]) {
         if (![[userInfo objectForKey:@"query"] isEqualToString:@""] )
-            // NSLog(@"[GOOGIRI] Got message...");
+            NSLog(@"[GOOGIRI] - triggering activator");
 
-            // activate Siri here
-            [[LAActivator sharedInstance] sendEvent:[LAEvent eventWithName:@"blah"] toListenerWithName:@"libactivator.system.virtual-assistant"];
-            // wait 0.3 seconds and then inject into Siri
-            dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 0.3 * NSEC_PER_SEC), dispatch_get_main_queue(), ^{
-                // NSLog(@"[GOOGIRI] Injecting into Siri: %@", [userInfo objectForKey:@"query"]);
-
+            // activate Siri
+            [[LAActivator sharedInstance] sendEvent:[LAEvent eventWithName:@"googiri_trigger_siri"] toListenerWithName:@"libactivator.system.virtual-assistant"];
+            // wait and then inject into Siri
+            dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 0.01 * NSEC_PER_SEC), dispatch_get_main_queue(), ^{
+                NSLog(@"[GOOGIRI] starting request with: %@", [userInfo objectForKey:@"query"]);
+                [latestConnection startRequestWithText:@"hi"];
                 [latestConnection startRequestWithText:[userInfo objectForKey:@"query"]];
             });
     } else if ([name isEqualToString:@"googiriActivateActivatorWithListener"]) {
@@ -84,6 +84,12 @@ static AFConnection *latestConnection = nil;
 - (id)init {
     latestConnection = %orig;
     return latestConnection;
+}
+
+- (void)startRequestWithCorrectedText:(id)arg1 forSpeechIdentifier:(id)arg2
+{
+  %log;
+  %orig;
 }
 
 %end
