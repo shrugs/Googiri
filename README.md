@@ -9,8 +9,13 @@ The best use case is in home automation; use Googiri to send Google-quality spee
 ## Features
 
 - Use Siri's first party integration features with Google's speech-to-text
+    + i.e. speak to Google, get results from Siri
+    + use Google to transcribe your message and Siri to create the reminders
 - Set a default handler (Siri, Google, or a Webserver) to handle normal queries
-- When you want to explicitly handle a query with a certain handler, specify it before the query. i.e. "Jarvis, turn off my thermostat" rather than simply "turn off my thermostat"
+    + i.e. who should handle "how tall is the empire state building?"
+    + default: `Google`
+- When you want to explicitly handle a query with a certain handler, specify it before the query.
+    + i.e. "Jarvis, turn off my thermostat" rather than simply "turn off my thermostat"
 - When using your own webserver, you may return JSON to trigger actions on the iDevice, including access to every installed Activator listener.
     + Success or Error responses can also be displayed on the device from the webserver
 
