@@ -6,6 +6,12 @@ Googiri is a powerful middleware broker for Google's voice search feature. It al
 
 The best use case is in home automation; use Googiri to send Google-quality speech-to-text to your automation setup straight from the jailbroken iDevice.
 
+## Tutorial
+
+I made a short tutorial on setting up Googiri with IFTTT and a Hue light bulb.
+
+[http://blog.mat.tc/googiri-home-automation/](http://blog.mat.tc/googiri-home-automation/)
+
 ## Features
 
 - Use Siri's first party integration features with Google's speech-to-text
